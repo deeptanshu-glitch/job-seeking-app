@@ -16,8 +16,8 @@ function Animation(){
             <div class="button-container" style={
                 {paddingRight: '20%',
                 paddingTop: '5%'}}>
-              <button class="btn login-btn fade-in delay-5 pulse-glow" style={{color:'white'}}>Login</button>
-              <button class="btn signup-btn fade-in delay-5 pulse-glow"style={{color:'white'}}>Sign Up</button>
+              <button class="btn login-btn fade-in delay-5 pulse-glow " style={{color:'white'}}>Login</button>
+              <button class="btn signup-btn fade-in delay-5 pulse-glow "style={{color:'white'}}>Sign Up</button>
             </div>
 
         </div>
