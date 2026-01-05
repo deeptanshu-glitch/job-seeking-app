@@ -1,7 +1,7 @@
 import React from "react";
 import './initial.css'
 
-function Animation(){
+function Welcome(){
 
     return(
         <div>
@@ -24,4 +24,4 @@ function Animation(){
     )
 }
 
-export default Animation
+export default Welcome

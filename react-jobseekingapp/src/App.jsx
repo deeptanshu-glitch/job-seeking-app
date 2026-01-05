@@ -1,14 +1,13 @@
 import React from "react";
-import Animation from "./initial";
-import './App.css'
+import Welcome from './init'
 
 function App(){
-    
+
   return(
-      <div>
-           <Animation />
-      </div>
+    <div>
+      <Welcome />
+    </div>
   )
- }
+}
 
 export default App
