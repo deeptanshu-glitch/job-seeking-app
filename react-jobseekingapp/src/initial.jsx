@@ -5,13 +5,21 @@ function Animation(){
 
     return(
         <div>
-            <h1 className="heading m-2 m-sm-3 m-md-4 m-lg-5">JOB SEEKER<br /><br /></h1>
-            <h4 className="Quotes"> Less stress,<br /> better opportunities, <br />and smarter career decisions<br /> — All in one place.</h4>
+            <h1 className="dropBounce heading m-2 m-sm-3 m-md-4 m-lg-5 delay-0">JOB SEEKER<br /><br /></h1>
+            <h4 className="dropBounce Quotes delay-1"><br /><br /> Less stress,<br /></h4>
+            <h4 className="dropBounce Quotes delay-2"> Better opportunities, <br /></h4>
+            <h4 className="dropBounce Quotes delay-3">Smarter career decisions<br /><br /> </h4>
+            <h4 className="dropBounce Motivation delay-4">-All in one Go</h4>
 
-            <div className="Account">
-                <button >Signin</button>
-                <button>Login</button>
+
+
+            <div class="button-container" style={
+                {paddingRight: '20%',
+                paddingTop: '5%'}}>
+              <button class="btn login-btn fade-in delay-5 pulse-glow" style={{color:'white'}}>Login</button>
+              <button class="btn signup-btn fade-in delay-5 pulse-glow"style={{color:'white'}}>Sign Up</button>
             </div>
+
         </div>
     )
 }
