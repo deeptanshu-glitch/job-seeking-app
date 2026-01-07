@@ -1,5 +1,8 @@
 import React from "react";
 import './initial.css'
+import BasicExample from "./login";
+import { Link } from "react-router-dom";
+
 
 function Welcome(){
 
@@ -16,8 +19,8 @@ function Welcome(){
             <div class="button-container" style={
                 {paddingRight: '20%',
                 paddingTop: '5%'}}>
-              <button class="btn login-btn fade-in delay-5 pulse-glow " style={{color:'white'}}>Login</button>
-              <button class="btn signup-btn fade-in delay-5 pulse-glow "style={{color:'white'}}>Sign Up</button>
+              <Link to="/login"><button class="btn login-btn fade-in delay-5 pulse-glow " onClick={BasicExample} style={{color:'white'}}>Login</button></Link>
+              {/* <Link to="/signup"><button class="btn signup-btn fade-in delay-5 pulse-glow "style={{color:'white'}}>Sign Up</button></Link> */}
             </div>
 
         </div>
