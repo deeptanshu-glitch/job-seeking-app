@@ -1,28 +1,23 @@
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import './login.css'
+import React from "react";
+import "./login.css";
 
-function BasicExample() {
+function Login() {
   return (
-    <div className="plain-bg">
-      <div className="form-wrapper">
-    <Form className='login-form'>
-      <Form.Group className="mb-3" controlId="formBasicUsername">
-        <Form.Label>Username</Form.Label>
-        <Form.Control type="text" placeholder="Enter Username" />
-      </Form.Group>
+    <div className="login-page">
+      <div className="login-card">
+        <h2>Welcome Back</h2>
+        <p className="subtitle">Login to your account</p>
 
-      <Form.Group className="mb-3" controlId="formBasicPassword">
-        <Form.Label>Password</Form.Label>
-        <Form.Control type="password" placeholder="Password" />
-      </Form.Group>
-      <Button variant="primary" type="submit">
-        Submit
-      </Button>
-    </Form>
+        <form>
+          <input type="text" placeholder="Username" required />
+          <input type="password" placeholder="Password" required />
+          <button type="submit">Login</button>
+        </form>
+
+        <span className="footer-text">New here? Create an account</span>
+      </div>
     </div>
-  </div>
   );
 }
 
-export default BasicExample;
+export default Login
