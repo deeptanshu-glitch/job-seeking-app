@@ -1,12 +1,7 @@
 body{
-    background-image: url('/photo.jpg');
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: cover;
-    height: 100vh;
-    color: #fff;
+  min-height: 100vh;
+  background: url("/photo.jpg") center/cover no-repeat;
 }
-
 .heading{
     font: bolder;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
@@ -105,7 +100,7 @@ body{
 .delay-3 { animation-delay: 0.8s; }
 .delay-4 { animation-delay: 1.0s; }
 
-.fade-in {
+.fade-In {
   animation: fadeIn 1s ease forwards;
 }
 
