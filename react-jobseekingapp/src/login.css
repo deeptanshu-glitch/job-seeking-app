@@ -1,5 +1,5 @@
 
-.login-overlay {
+.overlay{
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.35);
@@ -11,7 +11,7 @@
 }
 
 
-.login-card {
+.card {
   width: 380px;
   padding: 2.5rem;
   background: white;
@@ -21,11 +21,11 @@
   animation: pop 0.4s ease;
 }
 
-.login-card h2 {
+.card h2 {
   margin-bottom: 10px;
 }
 
-.login-card input {
+.card input {
   width: 100%;
   padding: 14px;
   margin-bottom: 14px;
@@ -33,7 +33,7 @@
   border: 1px solid #ccc;
 }
 
-.login-card button {
+.card button {
   width: 100%;
   padding: 14px;
   border-radius: 12px;

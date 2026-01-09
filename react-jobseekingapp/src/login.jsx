@@ -6,8 +6,8 @@ import { useNavigate, Link  } from "react-router-dom";
   const navigate = useNavigate();
 
   return (
-    <div className="login-overlay">
-      <div className="login-card" style={{ position: "relative" }}>
+    <div className="overlay">
+      <div className="card" style={{ position: "relative" }}>
         <span className="close-btn" onClick={() => navigate("/")}>×</span>
 
         <h2>Welcome back <br /><br /></h2>
