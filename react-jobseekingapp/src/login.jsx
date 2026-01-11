@@ -12,7 +12,9 @@ import { useNavigate, Link  } from "react-router-dom";
 
         <h2>Welcome back <br /><br /></h2>
         <form>
+           <label >Enter Username</label>
            <input type="text" placeholder="Username" required />
+           <label>Enter Password</label>
            <input type="password" placeholder="Password" required />
            <button type="submit">Login</button>
        </form>

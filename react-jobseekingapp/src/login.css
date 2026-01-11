@@ -44,6 +44,16 @@
   cursor: pointer;
 }
 
+.card label {
+  display: block;
+  text-align: left;
+  font-size: 0.85rem;
+  color: #444;
+  margin-bottom: 6px;
+  margin-left: 4px;
+  font-weight: 500;
+}
+
 .close-btn {
   position: absolute;
   top: 14px;

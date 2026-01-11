@@ -14,35 +14,41 @@ function Signup() {
         <p className="subtitle">Start your career journey with us</p>
 
         <form className="signup-form">
-
+        
           <div className="field">
             <label>Full Name</label>
             <input type="text" placeholder="Enter your full name" required />
           </div>
-
+        
+          <div className="field">
+            <label>User Name</label>
+            <input type="text" placeholder="Enter username" required />
+          </div>
+        
           <div className="field">
             <label>Email Address</label>
             <input type="email" placeholder="Enter your email" required />
           </div>
-
+        
           <div className="field">
-            <label>Phone Number</label>
-            <input type="tel" placeholder="Enter your phone number" required />
+            <label>Phone</label>
+            <input type="tel" placeholder="Enter phone number" required />
           </div>
-
-          <div className="two-col">
-            <div className="field">
-              <label>Password</label>
-              <input type="password" placeholder="Create password" required />
-            </div>
-
-            <div className="field">
-              <label>Confirm Password</label>
-              <input type="password" placeholder="Re-enter password" required />
-            </div>
+        
+          <div className="field">
+            <label>Password</label>
+            <input type="password" placeholder="Create password" required />
           </div>
-
-          <button type="submit">Create Account</button>
+        
+          <div className="field">
+            <label>Confirm Password</label>
+            <input type="password" placeholder="Confirm password" required />
+          </div>
+        
+          <div className="field full">
+            <button type="submit">Create Account</button>
+          </div>
+        
         </form>
       </div>
     </div>
