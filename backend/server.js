@@ -1,25 +1,25 @@
-const express = require('express')
-const mongoose = require('mongoose')
+
+import mongoose from "mongoose";
+import cors from "cors"
+import dotenv from "dotenv"
+
+import express from "express";
+import myRoutes from "./signup.js";
+
+
+
+
+dotenv.config()
 
 const app = express()
 
 app.use(express.json())
+app.use("/api", myRoutes);
 
-//Connecting database
+mongoose.connect(process.env.database_ID)
 
-mongoose.connect("mongodb://localhost:27017/Job-Seeking-site")
+.then(()=>console.log("MongoDB Connected"))
+.catch(err=>console.log(err));
 
-// creating schema
-
-const Schema = mongoose.Schema
-
-const jobSeekSchema = new Schema(
-    {
-        Username: String,
-        email: String,
-        phoneNumber: Number,
-        password: String
-    });
-    
-module.exports = mongoose.model('Users',jobSeekSchema)
-
+app.listen(5000,()=>
+    console.log('Server is running at http://localhost:5000/'))
