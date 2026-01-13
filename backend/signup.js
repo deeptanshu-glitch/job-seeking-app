@@ -7,7 +7,7 @@ const router = express.Router()
 
 router.post('/signup',async(req,res)=>{
 
-    try{
+   try{
         const { fullname, username, email, phonenumber, password } = req.body;
 
 
@@ -27,7 +27,11 @@ router.post('/signup',async(req,res)=>{
        } catch (err) {
        res.status(500).json({ error:"User already exists" });
        }
-});
+
+       
+}); 
+
+
 
 export default router;
     

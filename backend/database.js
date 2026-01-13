@@ -1,20 +1,18 @@
 
 import mongoose from "mongoose";
 
-// creating schema
+const jobSeekSchema = new mongoose.Schema({
+  fullname: { type: String, required: true },
 
-const Schema = mongoose.Schema
+  username: { type: String, required: true, unique: true, trim: true },
 
-const jobSeekSchema = new Schema(
-    {
-        fullname: { type: String, required: true },
-        username: { type: String, unique: true, required: true },
-        email: { type: String, unique: true, required: true },
-        phonenumber: { type: String, required: true },      
-        password: { type: String, required: true }
-    });
+  email: { type: String, required: true, unique: true, lowercase: true },
 
-//exporting db
-    
-export default mongoose.model('User',jobSeekSchema)
+  phonenumber: { type: String, required: true },
+
+  password: { type: String, required: true }
+}, { timestamps: true });
+
+export default mongoose.model("User", jobSeekSchema);
+
 
