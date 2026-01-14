@@ -75,3 +75,10 @@
   from { transform: scale(.8); opacity: 0; }
   to   { transform: scale(1); opacity: 1; }
 }
+
+.form-error {
+  color: #ff3b3b;
+  font-size: 13px;
+  margin-top: 10px;
+  text-align: left;
+}
