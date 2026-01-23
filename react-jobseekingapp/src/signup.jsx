@@ -3,7 +3,7 @@ import "./signup.css";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { signup } from "./api/auth";
-import Dash from "./dashboard";
+
 
 
 function Signup() {
@@ -39,8 +39,12 @@ const handleSubmit = async (e) => {
       phonenumber: form.phonenumber,
       password: form.password,
     });
-
+    
+    
     alert(res.data.message);
+    navigate("/login");
+    
+
   } catch (err) {
     alert(err.response?.data?.error || "Server Error");
   }
@@ -89,7 +93,7 @@ const handleSubmit = async (e) => {
           </div>
         
           <div className="field full">
-            <button type="submit" onClick={Dash}>Create Account</button>
+            <button type="submit" >Create Account</button>
           </div>
         
         </form>

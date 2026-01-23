@@ -16,7 +16,7 @@ function Welcome(){
 
 
 
-            <div class="button-container" style={
+            <div className="button-container" style={
                 {paddingRight: '20%',
                 paddingTop: '5%'}}>
               <Link to="/login"><button className="btn login-btn fade-in delay-5 pulse-glow " onClick={Login} style={{color:'white'}}>Login</button></Link>

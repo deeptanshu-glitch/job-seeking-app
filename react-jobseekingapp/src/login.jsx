@@ -3,7 +3,7 @@ import "./login.css";
 import { useNavigate, Link  } from "react-router-dom";
 import { useState } from "react"
 import { login } from "./api/auth";
-import Dash from "./dashboard";
+
 
  function Login() {
   const navigate = useNavigate();
@@ -22,16 +22,18 @@ import Dash from "./dashboard";
   const handleSubmit = async (e) =>{
     e.preventDefault()
 
-    console.log(res.data.message);
 
     try {
       const res = await login(form);
 
-      if (res.data.success) {
+      console.log(res.data.message);
+
+      
         navigate("/dashboard");
-      }
+      
     } catch (err) {
-      alert(err.response.data.message);
+      setError(err.response?.data?.error || "Server error");
+
     }
   
 
@@ -51,7 +53,7 @@ import Dash from "./dashboard";
            <label>Enter Password</label>
            <input name="password" type="password" placeholder="Password" onChange={handleChange} required />
            {error && <p className="form-error">{error}</p>}
-           <button type="submit" onClick={Dash}>Login</button>
+           <button type="submit">Login</button>
        </form>
 
         <Link to='/signup'><span className="footer-text">New here? Create an account</span></Link>
