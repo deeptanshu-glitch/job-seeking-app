@@ -115,7 +115,7 @@ body{
   }
 }
 
-.delay-5 { animation-delay: 1.2s; }
+.delay-5 { animation-delay: 1.0s; }
 
 .pulse-glow {
   animation: pulse 2s infinite;

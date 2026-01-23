@@ -28,7 +28,7 @@ body {
 
 .intro-bg {
   min-height: 100vh;
-  background: url("/photo.jpg") center/cover no-repeat;
+  background: url("photo.jpg") center/cover no-repeat;
 }
 
 
