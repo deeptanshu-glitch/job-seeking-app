@@ -2,7 +2,8 @@ import React from "react";
 import "./login.css";
 import { useNavigate, Link  } from "react-router-dom";
 import { useState } from "react"
-import { login } from "./api/auth(login)";
+import { login } from "./api/auth";
+import Dash from "./dashboard";
 
  function Login() {
   const navigate = useNavigate();
@@ -21,16 +22,23 @@ import { login } from "./api/auth(login)";
   const handleSubmit = async (e) =>{
     e.preventDefault()
 
-    try {
-      const res = await login(form);
-    
     console.log(res.data.message);
 
-      
-    } catch(err) {
-      setError(err.response?.data?.error || "Server error")
+    try {
+      const res = await login(form);
+
+      if (res.data.success) {
+        navigate("/dashboard");
+      }
+    } catch (err) {
+      alert(err.response.data.message);
     }
+  
+
   }
+  
+
+
   return (
     <div className="overlay">
       <div className="card" style={{ position: "relative" }}>
@@ -43,7 +51,7 @@ import { login } from "./api/auth(login)";
            <label>Enter Password</label>
            <input name="password" type="password" placeholder="Password" onChange={handleChange} required />
            {error && <p className="form-error">{error}</p>}
-           <button type="submit">Login</button>
+           <button type="submit" onClick={Dash}>Login</button>
        </form>
 
         <Link to='/signup'><span className="footer-text">New here? Create an account</span></Link>

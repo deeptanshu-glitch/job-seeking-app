@@ -1,0 +1,11 @@
+.dashboard {
+  min-height: 100vh;                
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-color: #9dcaf1;         
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 40px 20px;
+}
+
+

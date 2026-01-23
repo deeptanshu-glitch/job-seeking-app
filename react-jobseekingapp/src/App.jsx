@@ -2,6 +2,7 @@ import React from "react";
 import Welcome from './initial'
 import Login from "./login";
 import Signup from "./signup";
+import Dash from "./dashboard";
 import { Routes,Route, BrowserRouter } from "react-router-dom";
 
 function App(){
@@ -15,6 +16,7 @@ function App(){
         <Route path="/" element={<Welcome />} />
         <Route path="/login" element={< Login />} />
         <Route path="/signup" element={< Signup />} />
+        <Route path="/dashboard" element={<Dash />} />
         
         
     </Routes>

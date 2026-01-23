@@ -3,6 +3,7 @@ import "./signup.css";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { signup } from "./api/auth";
+import Dash from "./dashboard";
 
 
 function Signup() {
@@ -88,7 +89,7 @@ const handleSubmit = async (e) => {
           </div>
         
           <div className="field full">
-            <button type="submit">Create Account</button>
+            <button type="submit" onClick={Dash}>Create Account</button>
           </div>
         
         </form>
