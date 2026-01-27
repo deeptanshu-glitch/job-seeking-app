@@ -6,7 +6,7 @@ import dotenv from "dotenv"
 import express from "express";
 import myRoutes from "./signup.js";
 import loginRoutes from "./login.js";
-
+import dashboardRoutes from "./dashboard.js";
 
 
 dotenv.config()
@@ -17,6 +17,7 @@ app.use(cors())
 app.use(express.json())
 app.use("/api", myRoutes);
 app.use("/api",loginRoutes)
+app.use("/api", dashboardRoutes)
 
 mongoose.connect(process.env.database_ID)
 

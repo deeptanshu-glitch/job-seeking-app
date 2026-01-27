@@ -8,7 +8,8 @@ function Welcome(){
 
     return(
         <div className="intro-bg">
-            <h1 className="dropBounce heading m-2 m-sm-3 m-md-4 m-lg-5 delay-0">JOB SEEKER<br /><br /></h1>
+        <div className="intro-bg">
+            <h1 className="dropBounce heading m-2 m-sm-3 m-md-4 m-lg-5 delay-0"><br /><br />JOB SEEKER<br /><br /></h1>
             <h4 className="dropBounce Quotes delay-1"><br /><br /> Less stress,<br /></h4>
             <h4 className="dropBounce Quotes delay-2"> Better opportunities, <br /></h4>
             <h4 className="dropBounce Quotes delay-3">Smarter career decisions<br /><br /> </h4>
@@ -24,6 +25,7 @@ function Welcome(){
             </div>
 
         </div>
+    </div>
     )
 }
 

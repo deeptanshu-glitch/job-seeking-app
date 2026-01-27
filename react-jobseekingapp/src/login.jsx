@@ -28,13 +28,18 @@ import { login } from "./api/auth";
 
       console.log(res.data.message);
 
+    localStorage.setItem("token",res.data.token);
+    localStorage.setItem("user",JSON.stringify(res.data.user));
+
       
-        navigate("/dashboard");
+    navigate("/dashboard");
+
       
     } catch (err) {
       setError(err.response?.data?.error || "Server error");
 
     }
+  
   
 
   }
