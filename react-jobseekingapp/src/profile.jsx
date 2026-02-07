@@ -24,15 +24,17 @@ function Profile() {
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
+                console.log("Fetching profile data...");
                 const response = await API.get("/dashboard");
+                console.log("Profile response:", response.data);
                 setProfileData(response.data.user);
                 setEditData(response.data.user);
                 setImagePreview(response.data.user.image || "");
                 setLoading(false);
             } catch (err) {
-                setError("Failed to load profile data");
+                console.error("Profile fetch error:", err.response?.data || err.message);
+                setError("Failed to load profile data: " + (err.response?.data?.error || err.message));
                 setLoading(false);
-                console.error(err);
             }
         };
 
@@ -157,6 +159,7 @@ function Profile() {
         <div className="column column-center">
             {loading && <p className="loading">Loading profile...</p>}
             {error && <p className="error">{error}</p>}
+            {!loading && !error && !profileData && <p className="error">No profile data available</p>}
             {profileData && (
                 <div className="profile-content">
                     <div className="profile-header">
@@ -314,8 +317,8 @@ function Profile() {
                 </div>
                 <div className="badges">
                     <span className="badge">Verified</span>
-                    {profileData.education && <span className="badge">Educated</span>}
-                    {profileData.experience && <span className="badge">Experienced</span>}
+                    {profileData && profileData.education && <span className="badge">Educated</span>}
+                    {profileData && profileData.experience && <span className="badge">Experienced</span>}
                 </div>
             </div>
 

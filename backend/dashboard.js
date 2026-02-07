@@ -7,14 +7,22 @@ import fs from "fs";
 
 const router = express.Router();
 
-router.get("/dashboard", auth, (req, res) => {
-  res.json({
-    message: "Welcome to dashboard",
-    user: req.user
-  });
+router.get("/dashboard", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.json({
+      message: "Welcome to dashboard",
+      user
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch dashboard" });
+  }
 });
 
-// setup uploads folder
 const uploadsDir = path.join(process.cwd(), 'uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir);
@@ -52,7 +60,7 @@ router.post('/update-profile', auth, upload.single('image'), async (req, res) =>
     if (experience) update.experience = experience;
 
     if (req.file) {
-      // save accessible URL path for client
+      
       update.image = `/uploads/${req.file.filename}`;
     }
 

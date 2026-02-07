@@ -18,7 +18,7 @@ function CollapsibleExample() {
             <Nav.Link as={Link} to="/industry">Industry</Nav.Link>
           </Nav>
           <Nav>
-            <Nav.Link href="/post" style={
+            <Nav.Link as={Link} to="/post" style={
               {
                 backgroundColor: 'red',
                 borderRadius: '15px',
@@ -29,7 +29,7 @@ function CollapsibleExample() {
               }>
               Post a Job
             </Nav.Link>
-            <Nav.Link href="/profile" style={
+            <Nav.Link as={Link} to="/profile" style={
               {
                 backgroundColor: 'blue',
                 borderRadius: '15px',
