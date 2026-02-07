@@ -7,6 +7,7 @@ import express from "express";
 import myRoutes from "./signup.js";
 import loginRoutes from "./login.js";
 import dashboardRoutes from "./dashboard.js";
+import path from "path";
 
 
 dotenv.config()
@@ -18,6 +19,9 @@ app.use(express.json())
 app.use("/api", myRoutes);
 app.use("/api",loginRoutes)
 app.use("/api", dashboardRoutes)
+
+// serve uploaded files
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 mongoose.connect(process.env.database_ID)
 

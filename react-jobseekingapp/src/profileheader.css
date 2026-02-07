@@ -1,0 +1,46 @@
+.profile-header {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+}
+
+/* cover banner */
+.cover-photo {
+  height: 160px;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+}
+
+/* profile info section */
+.profile-info {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  position: relative;
+}
+
+/* profile image */
+.profile-pic {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 5px solid white;
+  margin-top: -70px;
+  background: white;
+}
+
+/* text */
+.profile-text h2 {
+  margin: 0;
+}
+
+.headline {
+  color: #374151;
+  margin-top: 4px;
+}
+
+.location {
+  color: gray;
+  font-size: 14px;
+  margin-top: 4px;
+}

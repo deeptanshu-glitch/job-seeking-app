@@ -3,6 +3,7 @@ import Welcome from './initial'
 import Login from "./login";
 import Signup from "./signup";
 import Dash from "./dashboard";
+import Profile from "./profile";
 import { Routes,Route, BrowserRouter } from "react-router-dom";
 import ProtectedRoute from './ProtectedRoute';
 function App(){
@@ -16,6 +17,7 @@ function App(){
         <Route path="/" element={<Welcome />} />
         <Route path="/login" element={< Login />} />
         <Route path="/signup" element={< Signup />} />
+        <Route path="/profile" element={< Profile />} />
         <Route 
             path="/dashboard"
             element ={
