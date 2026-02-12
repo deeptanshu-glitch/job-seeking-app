@@ -1,6 +1,6 @@
 import express from "express";
 import auth from "./middleware.js";
-import User from "./database.js";
+import User from "./database/dbuser.js";
 import multer from "multer";
 import path from "path";
 import fs from "fs";

@@ -2,7 +2,7 @@
 import mongoose from "mongoose";
 import cors from "cors"
 import dotenv from "dotenv"
-
+import cookieParser from "cookie-parser";
 import express from "express";
 import myRoutes from "./signup.js";
 import loginRoutes from "./login.js";
@@ -16,6 +16,7 @@ const app = express()
 app.use(cors())
 
 app.use(express.json())
+app.use(cookieParser())
 app.use("/api", myRoutes);
 app.use("/api",loginRoutes)
 app.use("/api", dashboardRoutes)

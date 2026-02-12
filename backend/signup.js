@@ -1,7 +1,7 @@
 import express from "express"
 import bcrypt from "bcryptjs"
 
-import User from "./database.js"
+import User from "./database/dbuser.js"
 
 const router = express.Router()
 

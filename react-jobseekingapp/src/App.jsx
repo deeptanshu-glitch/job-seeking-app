@@ -4,6 +4,7 @@ import Login from "./login";
 import Signup from "./signup";
 import Dash from "./dashboard";
 import Profile from "./profile";
+import Postjob from "./postjob";
 import { Routes,Route, BrowserRouter } from "react-router-dom";
 import ProtectedRoute from './ProtectedRoute';
 function App(){
@@ -25,6 +26,16 @@ function App(){
                </ProtectedRoute>
             }
         />
+
+        <Route 
+            path="/post" 
+            element={
+               <ProtectedRoute>
+                    <Postjob /> 
+               </ProtectedRoute>
+            }
+        />
+        
         <Route 
             path="/dashboard"
             element ={
