@@ -1,7 +1,7 @@
 import express from "express"
 import bcrypt from "bcryptjs"
 
-import User from "./database/dbuser.js"
+import User from "../database/dbuser.js"
 
 const router = express.Router()
 
@@ -10,6 +10,10 @@ router.post('/signup',async(req,res)=>{
    try{
         const { fullname, username, email, phonenumber, password } = req.body;
 
+        const existingUser = await User.findOne({ email });
+        if( existingUser ){
+            return res.status(400).json({error:"Email already exists"});
+        }
 
         const hashedpassword = await bcrypt.hash(password,10)       // 10 is strong as well as more secured type. 8 is faster but less secure whereas 12 is more secure but slow
        

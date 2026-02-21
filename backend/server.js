@@ -2,11 +2,12 @@
 import mongoose from "mongoose";
 import cors from "cors"
 import dotenv from "dotenv"
-import cookieParser from "cookie-parser";
+
 import express from "express";
-import myRoutes from "./signup.js";
-import loginRoutes from "./login.js";
-import dashboardRoutes from "./dashboard.js";
+import myRoutes from "./controller/signup.js";
+import loginRoutes from "./controller/login.js";
+import dashboardRoutes from "./controller/dashboard.js";
+import jobRoutes from "./controller/postjob.js";
 import path from "path";
 
 
@@ -16,10 +17,12 @@ const app = express()
 app.use(cors())
 
 app.use(express.json())
-app.use(cookieParser())
+
 app.use("/api", myRoutes);
 app.use("/api",loginRoutes)
 app.use("/api", dashboardRoutes)
+app.use("/api/company",companyroutes)
+app.use("/api/job",jobRoutes)
 
 // serve uploaded files
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
