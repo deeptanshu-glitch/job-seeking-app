@@ -26,4 +26,6 @@ const recruiterSchema = new mongoose.Schema({
     
 },{timestamps: true})
 
-export const job = mongoose.model("recruition" , recruiterSchema )
+const job = mongoose.model("job" , recruiterSchema )
+
+export default job

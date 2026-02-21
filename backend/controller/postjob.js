@@ -1,5 +1,5 @@
 import express from "express";
-import job  from "../database/db.recruiter";
+import job  from "../database/db.recruiter.js";
 import auth from "../middleware.js";
 
 const router = express.Router();

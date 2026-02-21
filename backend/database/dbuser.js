@@ -31,4 +31,6 @@ const jobSeekSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
-export default mongoose.model("User", jobSeekSchema);
+const User = mongoose.model("User", jobSeekSchema);
+
+export default User
