@@ -1,0 +1,5 @@
+1. need to make the frontend for the post job page
+
+2.then the dashboard page. 
+
+Using profileheader.jsx in it to add profile box then your job recruitions and then for the job where you have applied for.

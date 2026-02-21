@@ -15,19 +15,19 @@ try{
         return res.status(400).json({error:"All fields are required",status:false});
     }
     
-    const job = await createImageBitmap({
-    title,
-    description,
-    requirements: requirements.split(","),
-    salary,
-    experiencelevel : experience,
-    location,
-    jobtype,
-    position,
-    company: company,
-    created_by: userId
-})
-
+    const newJob = await job.create({
+      title,
+      description,
+      requirements: requirements.split(","), 
+      salary,
+      experience,
+      location,
+      jobtype,
+      position,
+      company,
+      created_by: userId
+    });
+    return res.status(201).json({ message: "Job created successfully", job: newJob, success: true });
 } catch(error){
         console.log(error);
     }
@@ -35,14 +35,14 @@ try{
  
  router.get("/getalljob",auth, async (req, res) => {
      try{
-        const keyword =req.query.keyword || "";
+        const keyword = req.query.keyword || "";
         const query = {
             $or: [
               {title: { $regex: keyword, $options: "i" } },
               {description: { $regex: keyword, $options: "i" } },
               {requirements: { $regex: keyword, $options: "i" } },
               {salary: { $regex: keyword, $options: "i" } },
-              {experiencelevel: { $regex: keyword, $options: "i" } },
+              {experience: { $regex: keyword, $options: "i" } },
               {location: { $regex: keyword, $options: "i" } },
               {jobtype: { $regex: keyword, $options: "i" } },
               {position: { $regex: keyword, $options: "i" } }

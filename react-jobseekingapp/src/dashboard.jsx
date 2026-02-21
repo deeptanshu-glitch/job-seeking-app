@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import CollapsibleExample from "./navafter";
 import ControlledCarousel from "./carousel";
 import "./dashboard.css";
+import ProfileHeader from "./profileheader";
 import { getDashboard } from "./api/dashboard";
 
 function Dash() {
@@ -30,6 +31,7 @@ function Dash() {
     <div className="dashboard">
       <CollapsibleExample />
       <ControlledCarousel />
+      
     </div>
   );
 }

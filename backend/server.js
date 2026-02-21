@@ -21,7 +21,7 @@ app.use(express.json())
 app.use("/api", myRoutes);
 app.use("/api",loginRoutes)
 app.use("/api", dashboardRoutes)
-//app.use("/api/job",jobRoutes)
+app.use("/api/job",jobRoutes)
 
 
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
