@@ -66,8 +66,8 @@ try{
  router.get("/getjobbyid/:id", async (req, res) => {
      try{
         const jobId = req.params.id;
-        const job = await recruition.findById(jobId);
-        if (!job){
+        const sinjob = await recruition.findById(jobId);
+        if (!sinjob){
             return res.status(400).json({error:"Job not found",status:false});
         }
      }catch (error){

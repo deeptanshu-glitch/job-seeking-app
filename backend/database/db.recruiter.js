@@ -14,7 +14,7 @@ const recruiterSchema = new mongoose.Schema({
     
     jobtype: {type: String , required: true},
 
-    experience: {type: String , required: true},
+    experience: {type: String },
     
     company: {type: mongoose.Schema.Types.ObjectId, ref: "Company" , required: true},
     

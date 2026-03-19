@@ -3,3 +3,15 @@
 2.then the dashboard page. 
 
 Using profileheader.jsx in it to add profile box then your job recruitions and then for the job where you have applied for.
+
+
+packages to be downloaded...
+1. express
+2. cors
+3. mongoose
+4. jsonwebtoken
+5. dotenv
+6. cookie-parser
+7. multer
+8. fs
+9. path

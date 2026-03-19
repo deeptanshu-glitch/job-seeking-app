@@ -15,7 +15,7 @@ const jobSeekSchema = new mongoose.Schema({
 
   image: { type: String, default: null },
 
-  resume: { type: [String], default: [] },      //to keep multiple files we use array sign []
+  resume: { type: [String], default: [] },      
 
   resumeText: { type: String, default: "" },
 
