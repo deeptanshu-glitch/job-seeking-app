@@ -1,7 +1,7 @@
 import React from "react";
-import './initial.css'
-import './App.css'
-import Login from "./login";
+import './Home.css'
+import '../../App.css'
+import Login from "../Login/Login";
 
 import { Link } from "react-router-dom";
 

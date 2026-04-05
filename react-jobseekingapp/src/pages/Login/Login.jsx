@@ -1,8 +1,9 @@
 import React from "react";
-import "./login.css";
+import "./Login.css";
 import { useNavigate, Link  } from "react-router-dom";
-import { useState } from "react"
-import { login } from "./api/auth";
+import { useState } from "react";
+import Cookies from "js-cookie";
+import { login } from "../../api/auth";
 
 
  function Login() {
@@ -28,8 +29,8 @@ import { login } from "./api/auth";
 
       console.log(res.data.message);
 
-    localStorage.setItem("token",res.data.token);
-    localStorage.setItem("user",JSON.stringify(res.data.user));
+    Cookies.set("token", res.data.token, { expires: 7 });
+    Cookies.set("user", JSON.stringify(res.data.user), { expires: 7 });
 
       
     navigate("/dashboard");

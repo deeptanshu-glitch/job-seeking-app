@@ -1,4 +1,5 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const API = axios.create({
   baseURL: "http://localhost:5000/api",
@@ -7,10 +8,8 @@ const API = axios.create({
 export const signup = (formData) => API.post("/signup", formData);
 export const login = (data) => axios.post("http://localhost:5000/api/login", data);
 
-
-
 API.interceptors.request.use((req) => {
-  const token = localStorage.getItem("token");
+  const token = Cookies.get("token");
 
   if (token) {
     req.headers.Authorization = `Bearer ${token}`;

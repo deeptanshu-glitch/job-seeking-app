@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import Carousel from 'react-bootstrap/Carousel';
-import img1 from './assets/slide1.jpg';
-import img2 from './assets/slide2.jpg';
-import img3 from './assets/slide3.jpg';
-import "./carousel.css"
+import img1 from '../assets/slide1.jpg';
+import img2 from '../assets/slide2.jpg';
+import img3 from '../assets/slide3.jpg';
+import "./Carousel.css"
 
 
 function ControlledCarousel() {

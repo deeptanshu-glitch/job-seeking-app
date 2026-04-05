@@ -9,6 +9,7 @@ import loginRoutes from "./controller/login.js";
 import dashboardRoutes from "./controller/dashboard.js";
 import jobRoutes from "./controller/postjob.js";
 import path from "path";
+import { env } from "process";
 
 
 dotenv.config()
@@ -31,5 +32,5 @@ mongoose.connect(process.env.database_ID)
 .then(()=>console.log("MongoDB Connected"))
 .catch(err=>console.log(err));
 
-app.listen(5000,()=>
+app.listen(process.env.PORT,()=>
     console.log('Server is running at http://localhost:5000/'))

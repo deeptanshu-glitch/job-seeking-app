@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import "./profile.css";
-import API from "./api/auth";
+import "./Profile.css";
+import Cookies from "js-cookie";
+import API from "../../api/auth";
+import { uploadToCloudinary } from "../../api/cloudinary";
 
 
 function Profile() {
@@ -30,8 +32,8 @@ function Profile() {
     const navigate = useNavigate();
 
     const handleSignOut = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+        Cookies.remove("token");
+        Cookies.remove("user");
         navigate('/login');
     };
 
@@ -112,28 +114,35 @@ function Profile() {
         }));
     };
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            if (!['image/jpeg', 'image/jpg'].includes(file.type)) {
-                alert('Please select a JPG/JPEG image');
-                return;
-            }
+    const [imageUploading, setImageUploading] = useState(false);
+    const [resumeUploading, setResumeUploading] = useState(false);
 
-            const previewUrl = URL.createObjectURL(file);
-            setImagePreview(previewUrl);
-            setEditData(prev => ({
-                ...prev,
-                imageFile: file
-            }));
+    const handleImageChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (!['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(file.type)) {
+            alert('Please select a JPG, JPEG, PNG or WebP image');
+            return;
+        }
+        // Show local preview immediately
+        const previewUrl = URL.createObjectURL(file);
+        setImagePreview(previewUrl);
+        try {
+            setImageUploading(true);
+            const secureUrl = await uploadToCloudinary(file, 'image');
+            setEditData(prev => ({ ...prev, imageUrl: secureUrl, imageFile: null }));
+        } catch (err) {
+            alert('Image upload failed: ' + err.message);
+        } finally {
+            setImageUploading(false);
         }
     };
 
-    const handleResumeChange = (e) => {
+    const handleResumeChange = async (e) => {
         const files = Array.from(e.target.files || []);
         if (!files.length) return;
 
-        const allowedExt = ['pdf','doc','docx'];
+        const allowedExt = ['pdf', 'doc', 'docx'];
         for (const file of files) {
             const ext = (file.name.split('.').pop() || '').toLowerCase();
             if (!allowedExt.includes(ext)) {
@@ -141,8 +150,20 @@ function Profile() {
                 return;
             }
         }
-
-        setEditData(prev => ({ ...prev, resumeFiles: [...(prev.resumeFiles || []), ...files] }));
+        try {
+            setResumeUploading(true);
+            const uploadedUrls = await Promise.all(
+                files.map(f => uploadToCloudinary(f, 'raw'))
+            );
+            setEditData(prev => ({
+                ...prev,
+                resumeUrls: [...(prev.resumeUrls || []), ...uploadedUrls]
+            }));
+        } catch (err) {
+            alert('Resume upload failed: ' + err.message);
+        } finally {
+            setResumeUploading(false);
+        }
     };
 
     const addItem = (field) => {
@@ -166,23 +187,19 @@ function Profile() {
     const handleSave = async () => {
         setSaving(true);
         try {
-            const formData = new FormData();
-            formData.append('fullname', editData.fullname || '');
-            formData.append('email', editData.email || '');
-            formData.append('phonenumber', editData.phonenumber || '');
-            formData.append('education', Array.isArray(editData.education) ? editData.education.join('; ') : (editData.education || ''));
-            formData.append('experience', Array.isArray(editData.experience) ? editData.experience.join('; ') : (editData.experience || ''));
-            formData.append('skills', Array.isArray(editData.skills) ? editData.skills.join('; ') : (editData.skills || ''));
-            formData.append('links', Array.isArray(editData.links) ? editData.links.join('; ') : (editData.links || ''));
-            if (resumeText) {
-                formData.append('resumeText', resumeText);
-            }
-            if (editData.imageFile) {
-                formData.append('image', editData.imageFile);
-            }
-            if (editData.resumeFiles && editData.resumeFiles.length) {
-                editData.resumeFiles.forEach(f => formData.append('resume', f));
-            }
+            // Send JSON with Cloudinary URLs — no binary files needed
+            const payload = {
+                fullname: editData.fullname || '',
+                email: editData.email || '',
+                phonenumber: editData.phonenumber || '',
+                education: Array.isArray(editData.education) ? editData.education.join('; ') : (editData.education || ''),
+                experience: Array.isArray(editData.experience) ? editData.experience.join('; ') : (editData.experience || ''),
+                skills: Array.isArray(editData.skills) ? editData.skills.join('; ') : (editData.skills || ''),
+                links: Array.isArray(editData.links) ? editData.links.join('; ') : (editData.links || ''),
+                resumeText: resumeText || '',
+                ...(editData.imageUrl && { image: editData.imageUrl }),
+                ...(editData.resumeUrls && editData.resumeUrls.length && { resume: editData.resumeUrls }),
+            };
 
             console.log('Saving profile with data:', {
                 fullname: editData.fullname,
@@ -192,7 +209,7 @@ function Profile() {
                 hasResume: !!(editData.resumeFiles && editData.resumeFiles.length)
             });
 
-            const response = await API.post('/update-profile', formData);
+            const response = await API.post('/update-profile', payload);
             console.log('Save response:', response.data);
             
             const user = response.data.user || {};
@@ -208,7 +225,9 @@ function Profile() {
                 skills: splitToArray(user.skills),
                 links: splitToArray(user.links),
                 resume: Array.isArray(user.resume) ? user.resume : [],
-                resumeFiles: []
+                resumeFiles: [],
+                resumeUrls: [],
+                imageUrl: ''
             });
             setResumeText(user.resumeText || '');
             setImagePreview(user.image || '');
@@ -276,13 +295,15 @@ function Profile() {
                             {isEditing ? (
                                 <>
                                     <img src={imagePreview || "https://via.placeholder.com/150"} alt={editData.fullname} />
+                                    {imageUploading && <p style={{fontSize:'0.75rem', color:'orange'}}>⏳ Uploading...</p>}
                                     <label className="image-upload-label">
                                         📷
                                         <input 
                                             type="file" 
                                             name="image"
-                                            accept=".jpg,.jpeg"
+                                            accept=".jpg,.jpeg,.png,.webp"
                                             onChange={handleImageChange}
+                                            disabled={imageUploading}
                                             style={{ display: 'none' }}
                                         />
                                     </label>
@@ -537,21 +558,22 @@ function Profile() {
                                             {Array.isArray(profileData?.resume) && profileData.resume.length > 0 && (
                                                 <div style={{marginBottom:8}}>
                                                     {profileData.resume.map((r, idx) => (
-                                                        <div key={idx}>Existing: <a href={`${API.defaults.baseURL.replace('/api','')}${r}`} target="_blank" rel="noreferrer">{r.split('/').pop()}</a></div>
+                                                        <div key={idx}>Existing: <a href={r} target="_blank" rel="noreferrer">{r.split('/').pop()}</a></div>
                                                     ))}
                                                 </div>
                                             )}
-                                            {(editData.resumeFiles || []).length > 0 && (
-                                                <div style={{marginBottom:8}}>Selected: {(editData.resumeFiles || []).map((f,i) => (<div key={i}>{f.name}</div>))}</div>
+                                            {(editData.resumeUrls || []).length > 0 && (
+                                                <div style={{marginBottom:8, color:'green'}}>✓ Uploaded: {(editData.resumeUrls || []).map((url,i) => (<div key={i}>{url.split('/').pop()}</div>))}</div>
                                             )}
-                                            <input type="file" multiple accept=".pdf,.doc,.docx" onChange={handleResumeChange} />
+                                            {resumeUploading && <p style={{color:'orange'}}>⏳ Uploading resume...</p>}
+                                            <input type="file" multiple accept=".pdf,.doc,.docx" onChange={handleResumeChange} disabled={resumeUploading} />
                                         </div>
                                     </div>
                                 ) : (
                                     ((Array.isArray(profileData.resume) && profileData.resume.length > 0) || resumeText) ? (
                                         <div>
                                             {Array.isArray(profileData.resume) && profileData.resume.map((r,i) => (
-                                                <p key={i}><a href={`${API.defaults.baseURL.replace('/api','')}${r}`} target="_blank" rel="noreferrer">📄 {r.split('/').pop()}</a></p>
+                                                <p key={i}><a href={r} target="_blank" rel="noreferrer">📄 {r.split('/').pop()}</a></p>
                                             ))}
                                             {resumeText && <p style={{whiteSpace:'pre-wrap'}}>{resumeText}</p>}
                                         </div>

@@ -1,12 +1,12 @@
 import React from "react";
-import Welcome from './initial'
-import Login from "./login";
-import Signup from "./signup";
-import Dash from "./dashboard";
-import Profile from "./profile";
-import Postjob from "./postjob";
+import Welcome from './pages/Home/Home'
+import Login from "./pages/Login/Login";
+import Signup from "./pages/Signup/Signup";
+import Dash from "./pages/Dashboard/Dashboard";
+import Profile from "./pages/Profile/Profile";
+import Postjob from "./pages/PostJob/PostJob";
 import { Routes,Route, BrowserRouter } from "react-router-dom";
-import ProtectedRoute from './ProtectedRoute';
+import ProtectedRoute from './components/ProtectedRoute';
 function App(){
 
   

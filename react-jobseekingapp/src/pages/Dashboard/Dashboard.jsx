@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import CollapsibleExample from "./navafter";
-import ControlledCarousel from "./carousel";
-import "./dashboard.css";
-import ProfileHeader from "./profileheader";
-import { getDashboard } from "./api/dashboard";
+import CollapsibleExample from "../../components/NavAfter";
+import ControlledCarousel from "../../components/Carousel";
+import "./Dashboard.css";
+import ProfileHeader from "../../components/ProfileHeader";
+import { getDashboard } from "../../api/dashboard";
 
 function Dash() {
   const [loading, setLoading] = useState(true);
