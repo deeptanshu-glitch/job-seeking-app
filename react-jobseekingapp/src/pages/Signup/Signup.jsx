@@ -9,6 +9,8 @@ import { signup } from "../../api/auth";
 function Signup() {
   const navigate = useNavigate();
 
+  const [role, setRole] = useState("job seeker");
+
   const [form , setForm ] = useState({
     fullname:"",
     username:"",
@@ -38,6 +40,7 @@ const handleSubmit = async (e) => {
       email: form.email,
       phonenumber: form.phonenumber,
       password: form.password,
+      role: role,
     });
     
     
@@ -62,6 +65,23 @@ const handleSubmit = async (e) => {
 
         <form className="signup-form" onSubmit={handleSubmit}>
         
+          <div className="role-selector full">
+            <button 
+              type="button" 
+              className={`role-btn ${role === 'job seeker' ? 'active' : ''}`}
+              onClick={() => setRole('job seeker')}
+            >
+              Job Seeker
+            </button>
+            <button 
+              type="button" 
+              className={`role-btn ${role === 'recruiter' ? 'active' : ''}`}
+              onClick={() => setRole('recruiter')}
+            >
+              Recruiter
+            </button>
+          </div>
+
           <div className="field">
             <label>Full Name</label>
             <input name='fullname' type="text" placeholder="Enter your full name" onChange={handleChange} required />

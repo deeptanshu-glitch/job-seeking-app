@@ -13,6 +13,8 @@ const jobSeekSchema = new mongoose.Schema({
 
   password: { type: String, required: true },
 
+  role: { type: String, enum: ["job seeker", "recruiter"], default: "job seeker", required: true },
+
   image: { type: String, default: null },
 
   resume: { type: [String], default: [] },      

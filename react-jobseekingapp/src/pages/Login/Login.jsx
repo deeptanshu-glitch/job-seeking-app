@@ -9,6 +9,8 @@ import { login } from "../../api/auth";
  function Login() {
   const navigate = useNavigate();
 
+  const [role, setRole] = useState("job seeker");
+
   const [form , setForm ] = useState({
     email:"",
     password:""
@@ -25,7 +27,7 @@ import { login } from "../../api/auth";
 
 
     try {
-      const res = await login(form);
+      const res = await login({ ...form, role });
 
       console.log(res.data.message);
 
@@ -54,6 +56,24 @@ import { login } from "../../api/auth";
 
         <h2>Welcome back <br /><br /></h2>
         <form onSubmit={handleSubmit}>
+        
+          <div className="role-selector">
+            <button 
+              type="button" 
+              className={`role-btn ${role === 'job seeker' ? 'active' : ''}`}
+              onClick={() => setRole('job seeker')}
+            >
+              Job Seeker
+            </button>
+            <button 
+              type="button" 
+              className={`role-btn ${role === 'recruiter' ? 'active' : ''}`}
+              onClick={() => setRole('recruiter')}
+            >
+              Recruiter
+            </button>
+          </div>
+
            <label >Enter email</label>
            <input name="email" type="text" placeholder="Email" onChange={handleChange} required />
            <label>Enter Password</label>

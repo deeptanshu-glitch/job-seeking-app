@@ -8,13 +8,17 @@ const router = express.Router()
 router.post('/login',async(req,res)=>{
 
     try{
-    const { email , password } = req.body;
+    const { email , password, role } = req.body;
 
     const user = await User.findOne({ email })
 
     if( !user ){
         return res.status(400).json({error: "Email doesn't exist"})
-       }
+    }
+
+    if (user.role && role && user.role !== role) {
+        return res.status(400).json({error: "Account doesn't exist for this role"})
+    }
 
     const verifypass = await bcryptjs.compare(password,user.password)
 
@@ -23,7 +27,7 @@ router.post('/login',async(req,res)=>{
     }
 
     const token = jwt.sign(
-      { id: user._id, email: user.email },
+      { id: user._id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: '1d'}
     )
@@ -35,7 +39,8 @@ router.post('/login',async(req,res)=>{
         id: user._id,
         fullname: user.fullname,
         username: user.username,
-        email: user.email
+        email: user.email,
+        role: user.role
       }
     });
 

@@ -82,3 +82,30 @@
   margin-top: 10px;
   text-align: left;
 }
+
+.role-selector {
+  display: flex;
+  background: #f1f5f9;
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 20px;
+}
+
+.role-btn {
+  flex: 1;
+  padding: 10px;
+  border: none !important;
+  background: transparent !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  color: #64748b !important;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0 !important;
+}
+
+.role-btn.active {
+  background: white !important;
+  color: #2563eb !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+}

@@ -11,14 +11,16 @@ try{
 
     const userId = req.user._id;
 
-    if(!title || !description || !requirements || !salary || !experience || !location || !jobtype || !position || !company ){
+    const reqList = Array.isArray(requirements) ? requirements : (requirements ? requirements.split(",") : []);
+
+    if(!title || !description || !salary || !experience || !location || !jobtype || !position || !company ){
         return res.status(400).json({error:"All fields are required",status:false});
     }
     
     const newJob = await job.create({
       title,
       description,
-      requirements: requirements.split(","), 
+      requirements: reqList, 
       salary,
       experience,
       location,
@@ -75,13 +77,14 @@ try{
      }
  })
 
- router.put("/getalljobs/:adminId", async (req, res) => {
+ router.get("/getalljobs", auth, async (req, res) => {
      try{
         const adminId = req.user._id;
-        const jobs = await Recruition.find({created_by: adminId});
+        const jobs = await job.find({created_by: adminId});
         if (!jobs){
             return res.status(400).json({error:"No jobs found",status:false});
         }
+        return res.status(200).json({ jobs, success: true });
 
      }catch (error){
          console.log(error);
