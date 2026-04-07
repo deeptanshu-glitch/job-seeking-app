@@ -8,7 +8,7 @@ const applicationSchema = new mongoose.Schema({
 
     status:{ type: String, enum: ['pending','accepted','rejected'], default: 'pending'}
     
-},{timeseries: true})
+},{ timestamps: true })
 
  
 const Application = mongoose.model("Application", applicationSchema)

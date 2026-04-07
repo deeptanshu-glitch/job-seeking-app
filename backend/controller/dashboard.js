@@ -1,6 +1,8 @@
 import express from "express";
 import auth from "../middleware.js";
 import User from "../database/dbuser.js";
+import Application from "../database/db.application.js";
+import Job from "../database/db.recruiter.js";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -20,6 +22,36 @@ router.get("/dashboard", auth, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch dashboard" });
+  }
+});
+
+// Seeker-specific dashboard data
+router.get("/seeker-dashboard", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    // Profile completion check
+    const fields = ['fullname', 'email', 'phonenumber', 'education', 'experience', 'skills', 'image'];
+    const filled = fields.filter(f => user[f] && user[f] !== '' && user[f] !== null).length;
+    const profileCompletion = Math.round((filled / fields.length) * 100);
+
+    // Applied jobs with populated job info
+    const applications = await Application.find({ applicant: req.user.id })
+      .populate({ path: 'job', model: 'job' })
+      .sort({ createdAt: -1 })
+      .limit(10);
+
+    // Latest active jobs for discovery
+    const latestJobs = await Job.find({ status: 'active' })
+      .sort({ createdAt: -1 })
+      .limit(6)
+      .select('title companyName location salary jobtype experience createdAt');
+
+    res.json({ user, profileCompletion, applications, latestJobs });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch seeker dashboard" });
   }
 });
 
@@ -50,11 +82,11 @@ const upload = multer({ storage, fileFilter: (req, file, cb) => {
 
 router.post('/update-profile', auth, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'resume', maxCount: 10 }]), async (req, res) => {
   try {
-    const { fullname, email, phonenumber, education, experience, skills, resumeText, links } = req.body;
+    const { fullname, email, phonenumber, education, experience, skills, resumeText, links, companyName, companyWebsite, companyDescription, location, position } = req.body;
 
     console.log('=== UPDATE PROFILE REQUEST ===');
     console.log('User ID:', req.user.id);
-    console.log('Body fields:', { fullname, email, phonenumber, education, experience, skills, resumeText, links });
+    console.log('Body fields:', { fullname, email, phonenumber, education, experience, skills, resumeText, links, companyName, companyWebsite, companyDescription, location, position });
     console.log('Files received:', req.files ? Object.keys(req.files) : 'None');
     
     const update = {};
@@ -66,6 +98,11 @@ router.post('/update-profile', auth, upload.fields([{ name: 'image', maxCount: 1
     if (skills !== undefined) update.skills = skills || '';
     if (resumeText !== undefined) update.resumeText = resumeText || '';
     if (links !== undefined) update.links = links || '';
+    if (companyName !== undefined) update.companyName = companyName || '';
+    if (companyWebsite !== undefined) update.companyWebsite = companyWebsite || '';
+    if (companyDescription !== undefined) update.companyDescription = companyDescription || '';
+    if (location !== undefined) update.location = location || '';
+    if (position !== undefined) update.position = position || '';
 
     console.log('Update object before files:', update);
     

@@ -29,7 +29,15 @@ const jobSeekSchema = new mongoose.Schema({
 
   links: { type: String, default: "" },
 
-  company: {type: mongoose.Schema.Types.ObjectId, ref: "Company"}
+  companyName: { type: String, default: "" },
+
+  companyWebsite: { type: String, default: "" },
+
+  companyDescription: { type: String, default: "" },
+
+  location: { type: String, default: "" },
+
+  position: { type: String, default: "" },
 
 }, { timestamps: true });
 

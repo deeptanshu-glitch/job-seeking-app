@@ -9,12 +9,18 @@ const router = express.Router();
 router.post("/apply/:jobId", auth, async (req, res) => {
   try {
     const { jobId } = req.params;
-    const userId = req.user._id;
+    const userId = req.user.id || req.user._id;
+
+    // Prevent duplicate applications
+    const existing = await Application.findOne({ job: jobId, applicant: userId });
+    if (existing) {
+      return res.status(400).json({ error: "You have already applied for this job" });
+    }
 
     const newApplication = await Application.create({
       applicant: userId,
       job: jobId,
-      status: "Pending"
+      status: "pending"
     });
 
     await Job.findByIdAndUpdate(jobId, {
@@ -38,7 +44,7 @@ router.put("/application/:appId/:action", auth, async (req, res) => {
 
     const updatedApp = await Application.findByIdAndUpdate(
       appId,
-      { status: action === "accept" ? "Accepted" : "Rejected" },
+      { status: action === "accept" ? "accepted" : "rejected" },
       { new: true }
     ).populate("applicant");
 

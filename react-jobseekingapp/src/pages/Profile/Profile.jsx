@@ -23,7 +23,12 @@ function Profile() {
         skills: [],
         links: [],
         resume: [],
-        resumeFiles: []
+        resumeFiles: [],
+        companyName: "",
+        companyWebsite: "",
+        companyDescription: "",
+        location: "",
+        position: ""
     });
     const [resumeText, setResumeText] = useState('');
     const [editInputs, setEditInputs] = useState({ education: '', experience: '', skills: '', links: '' });
@@ -197,6 +202,11 @@ function Profile() {
                 skills: Array.isArray(editData.skills) ? editData.skills.join('; ') : (editData.skills || ''),
                 links: Array.isArray(editData.links) ? editData.links.join('; ') : (editData.links || ''),
                 resumeText: resumeText || '',
+                companyName: editData.companyName || '',
+                companyWebsite: editData.companyWebsite || '',
+                companyDescription: editData.companyDescription || '',
+                location: editData.location || '',
+                position: editData.position || '',
                 ...(editData.imageUrl && { image: editData.imageUrl }),
                 ...(editData.resumeUrls && editData.resumeUrls.length && { resume: editData.resumeUrls }),
             };
@@ -373,6 +383,62 @@ function Profile() {
                                 />
                             </div>
 
+                            {profileData.role === 'recruiter' && (
+                                <>
+                                    <div className="form-group">
+                                        <label>Company Name</label>
+                                        <input 
+                                            type="text" 
+                                            name="companyName"
+                                            value={editData.companyName || ''}
+                                            onChange={handleEditChange}
+                                            placeholder="Enter your company name"
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Company Website</label>
+                                        <input 
+                                            type="url" 
+                                            name="companyWebsite"
+                                            value={editData.companyWebsite || ''}
+                                            onChange={handleEditChange}
+                                            placeholder="Enter company website"
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Company Description</label>
+                                        <textarea 
+                                            name="companyDescription"
+                                            value={editData.companyDescription || ''}
+                                            onChange={handleEditChange}
+                                            placeholder="Describe your company"
+                                            rows="3"
+                                            style={{ width: "100%", padding: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Position</label>
+                                        <input 
+                                            type="text" 
+                                            name="position"
+                                            value={editData.position || ''}
+                                            onChange={handleEditChange}
+                                            placeholder="Your role/position in the company"
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Location</label>
+                                        <input 
+                                            type="text" 
+                                            name="location"
+                                            value={editData.location || ''}
+                                            onChange={handleEditChange}
+                                            placeholder="Your location"
+                                        />
+                                    </div>
+                                </>
+                            )}
+
                             <div className="form-actions">
                                 <button 
                                     className="save-btn" 
@@ -407,6 +473,41 @@ function Profile() {
                                         <span className="value">{profileData.email || "N/A"}</span>
                                     </div>
                                 </div>
+                                {profileData.role === 'recruiter' && (
+                                    <>
+                                        <h3 style={{ marginTop: '30px', marginBottom: '15px' }}>Company Information</h3>
+                                        <div className="info-grid">
+                                            <div className="info-item">
+                                                <span className="label">Company:</span>
+                                                <span className="value">{profileData.companyName || "N/A"}</span>
+                                            </div>
+                                            <div className="info-item">
+                                                <span className="label">Position:</span>
+                                                <span className="value">{profileData.position || "N/A"}</span>
+                                            </div>
+                                            <div className="info-item">
+                                                <span className="label">Location:</span>
+                                                <span className="value">{profileData.location || "N/A"}</span>
+                                            </div>
+                                            <div className="info-item">
+                                                <span className="label">Website:</span>
+                                                <span className="value">
+                                                    {profileData.companyWebsite ? (
+                                                        <a href={profileData.companyWebsite} target="_blank" rel="noreferrer" style={{color: 'var(--primary-color)'}}>
+                                                            {profileData.companyWebsite}
+                                                        </a>
+                                                    ) : "N/A"}
+                                                </span>
+                                            </div>
+                                            <div className="info-item" style={{ gridColumn: '1 / -1' }}>
+                                                <span className="label">Company Description:</span>
+                                                <p style={{ marginTop: '8px', lineHeight: '1.5', color: '#555' }}>
+                                                    {profileData.companyDescription || "N/A"}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
                             </div>
 {/* experience block  */}
                             <div className="profile-section" id="experience" ref={experienceRef}>

@@ -8,9 +8,8 @@ import myRoutes from "./controller/signup.js";
 import loginRoutes from "./controller/login.js";
 import dashboardRoutes from "./controller/dashboard.js";
 import jobRoutes from "./controller/postjob.js";
+import statusRoutes from "./controller/status.js";
 import path from "path";
-import { env } from "process";
-
 
 dotenv.config()
 
@@ -20,10 +19,10 @@ app.use(cors())
 app.use(express.json())
 
 app.use("/api", myRoutes);
-app.use("/api",loginRoutes)
+app.use("/api", loginRoutes)
 app.use("/api", dashboardRoutes)
-app.use("/api/job",jobRoutes)
-
+app.use("/api/job", jobRoutes)
+app.use("/api", statusRoutes)
 
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 

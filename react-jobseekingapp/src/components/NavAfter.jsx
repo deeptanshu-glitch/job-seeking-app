@@ -3,7 +3,7 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 
 
-import {Link, useNavigate} from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Cookies from "js-cookie";
 
 function CollapsibleExample() {
@@ -19,7 +19,7 @@ function CollapsibleExample() {
   };
 
   return (
-    <Navbar collapseOnSelect expand="lg" className="bg-transparent " variant='light'style={{'borderBottom': '1px solid rgba(0, 0, 0, 0.4)'}}>
+    <Navbar collapseOnSelect expand="lg" className="bg-transparent " variant='light' style={{ 'borderBottom': '1px solid rgba(0, 0, 0, 0.4)' }}>
       <Container>
         <Navbar.Brand >🔍Job Finder</Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
@@ -27,7 +27,7 @@ function CollapsibleExample() {
           <Nav className="justify-content-center gap-lg-5 ms-auto">
             <Nav.Link as={Link} to="/dashboard">Home</Nav.Link>
             {role !== 'recruiter' && (
-              <input type="text" placeholder="Search for jobs" style={{'borderRadius':'4px','marginRight':'5px','textAlign':'center'}}/>
+              <input type="text" placeholder="Search for jobs" style={{ 'borderRadius': '4px', 'marginRight': '5px', 'textAlign': 'center' }} />
             )}
           </Nav>
           <Nav>
@@ -40,7 +40,7 @@ function CollapsibleExample() {
                   margin: '4px',
                   animation: 'pulse 2s infinite'
                 }
-                }>
+              }>
                 Recruiter Dashboard
               </Nav.Link>
             ) : (
@@ -53,17 +53,17 @@ function CollapsibleExample() {
                   animation: 'pulse 2s infinite'
                 }
               }
-                >Profile</Nav.Link>
+              >Profile</Nav.Link>
             )}
-            
-            <button 
-              onClick={handleSignout} 
+
+            <button
+              onClick={handleSignout}
               style={{
-                backgroundColor: 'transparent', 
-                border: '1px solid #dc2626', 
-                borderRadius: '15px', 
-                color: '#dc2626', 
-                marginLeft: '15px', 
+                backgroundColor: '#dc2626',
+                border: '1px solid #dc2626',
+                borderRadius: '15px',
+                color: 'white',
+                marginLeft: '15px',
                 padding: '0 15px',
                 fontWeight: '600'
               }}
