@@ -124,7 +124,7 @@ function Postjob() {
             const res = await API.get("/job/getalljobs");
             setJobs(res.data.jobs || []);
         } catch (err) {
-            showToast("Failed to load jobs", "error");
+            showToast("Failed to load jobs", err);
         } finally {
             setJobsLoading(false);
         }
@@ -144,7 +144,7 @@ function Postjob() {
             const res = await API.get(`/job/${jobId}/applicants`);
             setApplicants(res.data.applicants || []);
         } catch (err) {
-            showToast("Failed to load applicants", "error");
+            showToast("Failed to load applicants",err);
         } finally {
             setApplicantsLoading(false);
         }
@@ -168,7 +168,7 @@ function Postjob() {
             ));
             showToast(`Applicant ${action === "accept" ? "accepted" : "rejected"}`, action === "accept" ? "success" : "error");
         } catch (err) {
-            showToast("Action failed", "error");
+            showToast("Action failed", "error", err);
         } finally {
             setActionLoading(prev => ({ ...prev, [appId]: false }));
         }

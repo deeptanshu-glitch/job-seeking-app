@@ -1,25 +1,13 @@
 // ─── Cloudinary Configuration ───────────────────────────────────────────────
-// Replace the values below with your actual Cloudinary credentials.
-// Cloud Name  → found in your Cloudinary Dashboard (top-left)
-// Upload Preset → create an *unsigned* preset in Settings → Upload → Upload Presets
-const CLOUD_NAME = "YOUR_CLOUD_NAME";        // e.g. "dxyz123abc"
-const UPLOAD_PRESET = "YOUR_UPLOAD_PRESET";  // e.g. "job_seeker_unsigned"
 
-const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`;
-
-/**
- * Upload a single file to Cloudinary.
- * @param {File} file - The File object to upload.
- * @param {"image" | "raw" | "auto"} resourceType - "image" for photos, "raw" for PDFs/docs.
- * @returns {Promise<string>} The secure URL of the uploaded file.
- */
 export const uploadToCloudinary = async (file, resourceType = "auto") => {
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("upload_preset", UPLOAD_PRESET);
+  formData.append("upload_preset", import.meta.env.VITE_UPLOAD_PRESET);
   formData.append("resource_type", resourceType);
 
-  const url = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${resourceType}/upload`;
+  const type = resourceType === "auto" ? "auto" : resourceType;
+  const url = `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/${type}/upload`;
 
   const response = await fetch(url, {
     method: "POST",

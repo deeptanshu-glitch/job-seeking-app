@@ -1,4 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: url('/photo.jpg') no-repeat center center fixed;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  padding: 20px;
+}
 
 /* ── Subtitle ───────────────────────────────────── */
 .subtitle {

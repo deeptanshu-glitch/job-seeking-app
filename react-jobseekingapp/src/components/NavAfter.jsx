@@ -1,12 +1,9 @@
-import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-
-
-import { Link, useNavigate } from 'react-router-dom'
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Cookies from "js-cookie";
+import "./NavAfter.css";
 
-function CollapsibleExample() {
+function NavAfter() {
   const navigate = useNavigate();
   const userCookie = Cookies.get("user");
   const user = userCookie ? JSON.parse(userCookie) : null;
@@ -19,62 +16,34 @@ function CollapsibleExample() {
   };
 
   return (
-    <Navbar collapseOnSelect expand="lg" className="bg-transparent " variant='light' style={{ 'borderBottom': '1px solid rgba(0, 0, 0, 0.4)' }}>
-      <Container>
-        <Navbar.Brand >🔍Job Finder</Navbar.Brand>
-        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-        <Navbar.Collapse id="responsive-navbar-nav">
-          <Nav className="justify-content-center gap-lg-5 ms-auto">
-            <Nav.Link as={Link} to="/dashboard">Home</Nav.Link>
-            {role !== 'recruiter' && (
-              <input type="text" placeholder="Search for jobs" style={{ 'borderRadius': '4px', 'marginRight': '5px', 'textAlign': 'center' }} />
-            )}
-          </Nav>
-          <Nav>
-            {role === 'recruiter' ? (
-              <Nav.Link as={Link} to="/post" style={
-                {
-                  backgroundColor: 'red',
-                  borderRadius: '15px',
-                  color: 'white',
-                  margin: '4px',
-                  animation: 'pulse 2s infinite'
-                }
-              }>
-                Recruiter Dashboard
-              </Nav.Link>
-            ) : (
-              <Nav.Link as={Link} to="/profile" style={
-                {
-                  backgroundColor: 'blue',
-                  borderRadius: '15px',
-                  color: 'white',
-                  margin: '1px',
-                  animation: 'pulse 2s infinite'
-                }
-              }
-              >Profile</Nav.Link>
-            )}
-
-            <button
-              onClick={handleSignout}
-              style={{
-                backgroundColor: '#dc2626',
-                border: '1px solid #dc2626',
-                borderRadius: '15px',
-                color: 'white',
-                marginLeft: '15px',
-                padding: '0 15px',
-                fontWeight: '600'
-              }}
-            >
-              Sign Out
-            </button>
-          </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar >
+    <nav className="app-navbar">
+      <div className="nav-inner">
+        <Link to="/dashboard" className="nav-brand">
+          <span className="nav-brand-icon">🔍</span>
+          <span>Job Finder</span>
+        </Link>
+        <div className="nav-center">
+          {role !== 'recruiter' && (
+            <div className="nav-search">
+              <span className="nav-search-icon">🔍</span>
+              <input type="text" placeholder="Search for jobs..." />
+            </div>
+          )}
+        </div>
+        <div className="nav-right">
+          <Link to="/dashboard" className="nav-link">Home</Link>
+          {role === 'recruiter' ? (
+            <Link to="/post" className="nav-cta-btn">Recruiter Dashboard</Link>
+          ) : (
+            <Link to="/profile" className="nav-cta-btn">Profile</Link>
+          )}
+          <button onClick={handleSignout} className="nav-signout-btn">
+            Sign Out
+          </button>
+        </div>
+      </div>
+    </nav>
   );
 }
 
-export default CollapsibleExample;
+export default NavAfter;

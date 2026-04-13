@@ -61,6 +61,7 @@ function SkeletonCard() {
 function Dash() {
   const [loading, setLoading] = useState(true);
   const [dashData, setDashData] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -107,6 +108,13 @@ function Dash() {
   const rejectedCount  = applications.filter((a) => a.status === "rejected").length;
   const profileComplete = profileCompletion >= 100;
 
+  const filteredJobs = latestJobs.filter(j => 
+    !searchQuery || 
+    (j.title && j.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (j.companyName && j.companyName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (j.location && j.location.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
   return (
     <div className="seeker-dashboard">
       {/* ── Navbar ── */}
@@ -128,7 +136,7 @@ function Dash() {
           {/* Avatar */}
           {user?.image ? (
             <img
-              src={`http://localhost:5000${user.image}`}
+              src={user.image}
               alt="Profile"
               className="hero-avatar"
             />
@@ -260,22 +268,40 @@ function Dash() {
 
         {/* ── Latest Job Listings ── */}
         <div className="dash-card">
-          <h2 className="section-heading">
-            <span className="section-icon">🚀</span>
-            Latest Openings
-            <span className="section-count">{latestJobs.length} active</span>
-          </h2>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '22px', flexWrap: 'wrap', gap: '10px' }}>
+            <h2 className="section-heading" style={{ margin: 0 }}>
+              <span className="section-icon">🚀</span>
+              Latest Openings
+              <span className="section-count">{filteredJobs.length} active</span>
+            </h2>
+            
+            <input 
+              type="text" 
+              placeholder="🔍 Search jobs..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                padding: '10px 16px',
+                borderRadius: '8px',
+                border: '1px solid #e5e7eb',
+                outline: 'none',
+                minWidth: '250px',
+                fontFamily: 'Inter',
+                fontSize: '14px'
+              }}
+            />
+          </div>
 
-          {latestJobs.length === 0 ? (
+          {filteredJobs.length === 0 ? (
             <div className="empty-state">
               <div className="empty-icon">📭</div>
-              <h4>No active jobs right now</h4>
-              <p>Check back soon — new listings are added daily.</p>
+              <h4>No jobs found</h4>
+              <p>Try adjusting your search or check back tomorrow.</p>
             </div>
           ) : (
             <div className="jobs-grid">
-              {latestJobs.map((job) => (
-                <div key={job._id} className="job-card">
+              {filteredJobs.map((job) => (
+                <Link key={job._id} to={`/job/${job._id}`} className="job-card" style={{ textDecoration: 'none', color: 'inherit' }}>
                   <div className="job-card-header">
                     <div>
                       <div className="job-card-title">{job.title}</div>
@@ -301,15 +327,24 @@ function Dash() {
                     )}
                   </div>
 
-                  <div className="job-card-footer">
+                  <div className="job-card-footer" style={{ borderTop: 'none', paddingTop: '16px', marginTop: 'auto' }}>
                     <span className="job-salary">
                       {job.salary && job.salary !== "Not specified"
                         ? `💰 ${job.salary}`
                         : "Salary N/A"}
                     </span>
-                    <span className="job-posted">{timeAgo(job.createdAt)}</span>
+                    <span style={{
+                      backgroundColor: '#fef3c7',
+                      color: '#d97706',
+                      padding: '6px 12px',
+                      borderRadius: '8px',
+                      fontWeight: '700',
+                      fontSize: '13px'
+                    }}>
+                      Apply →
+                    </span>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}

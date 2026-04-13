@@ -82,11 +82,11 @@ const upload = multer({ storage, fileFilter: (req, file, cb) => {
 
 router.post('/update-profile', auth, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'resume', maxCount: 10 }]), async (req, res) => {
   try {
-    const { fullname, email, phonenumber, education, experience, skills, resumeText, links, companyName, companyWebsite, companyDescription, location, position } = req.body;
+    const { fullname, email, phonenumber, education, experience, skills, resumeText, links, companyName, companyWebsite, companyDescription, location, position, image, resume } = req.body;
 
     console.log('=== UPDATE PROFILE REQUEST ===');
     console.log('User ID:', req.user.id);
-    console.log('Body fields:', { fullname, email, phonenumber, education, experience, skills, resumeText, links, companyName, companyWebsite, companyDescription, location, position });
+    console.log('Body fields:', { fullname, email, phonenumber, education, experience, skills, resumeText, links, companyName, companyWebsite, companyDescription, location, position, image, resume });
     console.log('Files received:', req.files ? Object.keys(req.files) : 'None');
     
     const update = {};
@@ -103,6 +103,12 @@ router.post('/update-profile', auth, upload.fields([{ name: 'image', maxCount: 1
     if (companyDescription !== undefined) update.companyDescription = companyDescription || '';
     if (location !== undefined) update.location = location || '';
     if (position !== undefined) update.position = position || '';
+    
+    // Cloudinary URLs sent directly from frontend
+    if (image !== undefined) update.image = image;
+    if (resume !== undefined) {
+      update.resume = Array.isArray(resume) ? resume : [resume];
+    }
 
     console.log('Update object before files:', update);
     

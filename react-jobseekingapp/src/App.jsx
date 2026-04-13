@@ -5,6 +5,8 @@ import Signup from "./pages/Signup/Signup";
 import Dash from "./pages/Dashboard/Dashboard";
 import Profile from "./pages/Profile/Profile";
 import Postjob from "./pages/PostJob/PostJob";
+import JobDetail from "./pages/JobDetail/JobDetail";
+import NotFound from "./pages/NotFound/NotFound";
 import { Routes,Route, BrowserRouter } from "react-router-dom";
 import ProtectedRoute from './components/ProtectedRoute';
 function App(){
@@ -43,8 +45,18 @@ function App(){
                     <Dash /> 
                </ProtectedRoute>
             }
-        />   
+        />
         
+        <Route 
+            path="/job/:id"
+            element ={
+               <ProtectedRoute>
+                    <JobDetail /> 
+               </ProtectedRoute>
+            }
+        />
+
+        <Route path="*" element={<NotFound />} />
         
     </Routes>
   </BrowserRouter>

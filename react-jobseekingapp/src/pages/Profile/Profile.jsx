@@ -12,7 +12,12 @@ function Profile() {
     const [error, setError] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [editingSection, setEditingSection] = useState(null);
-    const [successMessage, setSuccessMessage] = useState(''); 
+    const [toast, setToast] = useState(null);
+
+    const showToast = (msg, type = "success") => {
+        setToast({ msg, type });
+        setTimeout(() => setToast(null), 3500);
+    };
     const [editData, setEditData] = useState({
         fullname: "",
         email: "",
@@ -81,9 +86,7 @@ function Profile() {
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
-                console.log("Fetching profile data...");
                 const response = await API.get("/dashboard");
-                console.log("Profile response:", response.data);
                 const user = response.data.user || {};
                 setProfileData(user);
                 const splitToArray = (val) => {
@@ -126,7 +129,7 @@ function Profile() {
         const file = e.target.files[0];
         if (!file) return;
         if (!['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(file.type)) {
-            alert('Please select a JPG, JPEG, PNG or WebP image');
+            showToast('Please select a JPG, JPEG, PNG or WebP image', 'error');
             return;
         }
         // Show local preview immediately
@@ -137,7 +140,7 @@ function Profile() {
             const secureUrl = await uploadToCloudinary(file, 'image');
             setEditData(prev => ({ ...prev, imageUrl: secureUrl, imageFile: null }));
         } catch (err) {
-            alert('Image upload failed: ' + err.message);
+            showToast('Image upload failed: ' + err.message, 'error');
         } finally {
             setImageUploading(false);
         }
@@ -151,7 +154,7 @@ function Profile() {
         for (const file of files) {
             const ext = (file.name.split('.').pop() || '').toLowerCase();
             if (!allowedExt.includes(ext)) {
-                alert('Please select PDF or Word documents only');
+                showToast('Please select PDF or Word documents only', 'error');
                 return;
             }
         }
@@ -165,7 +168,7 @@ function Profile() {
                 resumeUrls: [...(prev.resumeUrls || []), ...uploadedUrls]
             }));
         } catch (err) {
-            alert('Resume upload failed: ' + err.message);
+            showToast('Resume upload failed: ' + err.message, 'error');
         } finally {
             setResumeUploading(false);
         }
@@ -182,6 +185,14 @@ function Profile() {
         setEditData(prev => ({ ...prev, [field]: prev[field].filter((_, i) => i !== idx) }));
     };
 
+    const removeExistingResume = (idx) => {
+        setEditData(prev => ({ ...prev, resume: prev.resume.filter((_, i) => i !== idx) }));
+    };
+
+    const removeUploadedResume = (idx) => {
+        setEditData(prev => ({ ...prev, resumeUrls: prev.resumeUrls.filter((_, i) => i !== idx) }));
+    };
+
     const handleInputKey = (e, field) => {
         if (e.key === 'Enter' || e.key === ',') {
             e.preventDefault();
@@ -192,6 +203,8 @@ function Profile() {
     const handleSave = async () => {
         setSaving(true);
         try {
+            const finalResumes = [...(editData.resume || []), ...(editData.resumeUrls || [])];
+            
             // Send JSON with Cloudinary URLs — no binary files needed
             const payload = {
                 fullname: editData.fullname || '',
@@ -208,7 +221,7 @@ function Profile() {
                 location: editData.location || '',
                 position: editData.position || '',
                 ...(editData.imageUrl && { image: editData.imageUrl }),
-                ...(editData.resumeUrls && editData.resumeUrls.length && { resume: editData.resumeUrls }),
+                resume: finalResumes,
             };
 
             console.log('Saving profile with data:', {
@@ -244,8 +257,7 @@ function Profile() {
             setIsEditing(false);
             setEditingSection(null);
             setSaving(false);
-            setSuccessMessage('✓ Saved successfully!');
-            setTimeout(() => setSuccessMessage(''), 2000);
+            showToast('✓ Saved successfully!', 'success');
         } catch (err) {
             console.error('Save error:', err.response?.data || err.message);
             setError('Failed to save profile: ' + (err.response?.data?.error || err.message));
@@ -257,9 +269,9 @@ function Profile() {
         try {
             const url = window.location.href;
             await navigator.clipboard.writeText(url);
-            alert('Profile URL copied to clipboard');
+            showToast('Profile URL copied to clipboard', 'success');
         } catch (e) {
-            alert('Unable to copy URL' + e);
+            showToast('Unable to copy URL' + e, 'error');
         }
     };
 
@@ -299,7 +311,6 @@ function Profile() {
             {!loading && !error && !profileData && <p className="error">No profile data available</p>}
             {profileData && (
                 <div className="profile-content">
-                    {successMessage && <div className="success-message">{successMessage}</div>}
                     <div className="profile-header">
                         <div className={isEditing ? "profile-image-edit-mode" : "profile-image"}>
                             {isEditing ? (
@@ -656,15 +667,25 @@ function Profile() {
                                     <div className="section-edit">
                                         <div className="form-group">
                                             <label>Upload File(s)</label>
-                                            {Array.isArray(profileData?.resume) && profileData.resume.length > 0 && (
+                                            {Array.isArray(editData?.resume) && editData.resume.length > 0 && (
                                                 <div style={{marginBottom:8}}>
-                                                    {profileData.resume.map((r, idx) => (
-                                                        <div key={idx}>Existing: <a href={r} target="_blank" rel="noreferrer">{r.split('/').pop()}</a></div>
+                                                    {editData.resume.map((r, idx) => (
+                                                        <div key={idx} style={{display:'flex', alignItems:'center', gap:'10px', marginBottom: '4px'}}>
+                                                            <span>Existing: <a href={r} target="_blank" rel="noreferrer">{r.split('/').pop()}</a></span>
+                                                            <button type="button" onClick={() => removeExistingResume(idx)} style={{background:'transparent', color:'red', border:'none', cursor:'pointer', fontSize:'16px'}} title="Remove">✖</button>
+                                                        </div>
                                                     ))}
                                                 </div>
                                             )}
                                             {(editData.resumeUrls || []).length > 0 && (
-                                                <div style={{marginBottom:8, color:'green'}}>✓ Uploaded: {(editData.resumeUrls || []).map((url,i) => (<div key={i}>{url.split('/').pop()}</div>))}</div>
+                                                <div style={{marginBottom:8, color:'green'}}>
+                                                    {(editData.resumeUrls || []).map((url,i) => (
+                                                        <div key={i} style={{display:'flex', alignItems:'center', gap:'10px', marginBottom: '4px'}}>
+                                                            <span>✓ Uploaded: {url.split('/').pop()}</span>
+                                                            <button type="button" onClick={() => removeUploadedResume(i)} style={{background:'transparent', color:'red', border:'none', cursor:'pointer', fontSize:'16px'}} title="Remove">✖</button>
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             )}
                                             {resumeUploading && <p style={{color:'orange'}}>⏳ Uploading resume...</p>}
                                             <input type="file" multiple accept=".pdf,.doc,.docx" onChange={handleResumeChange} disabled={resumeUploading} />
@@ -761,6 +782,12 @@ function Profile() {
                 <button onClick={handleSignOut} className="signout-btn">Sign Out</button>
             </div> 
         </div>  
+
+        {toast && (
+            <div className={`jd-toast jd-toast-${toast.type}`}>
+                {toast.msg}
+            </div>
+        )}
     </div>
    )
 

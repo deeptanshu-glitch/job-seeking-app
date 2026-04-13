@@ -4,7 +4,8 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 50%, #fde68a 100%);
+  background: url('/photo.jpg') no-repeat center center fixed;
+  background-size: cover;
   display: flex;
   justify-content: center;
   align-items: center;
