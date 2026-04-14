@@ -9,6 +9,7 @@ import loginRoutes from "./controller/login.js";
 import dashboardRoutes from "./controller/dashboard.js";
 import jobRoutes from "./controller/postjob.js";
 import statusRoutes from "./controller/status.js";
+import resetPasswordRoutes from "./controller/resetpassword.js";
 import path from "path";
 
 dotenv.config()
@@ -23,6 +24,7 @@ app.use("/api", loginRoutes)
 app.use("/api", dashboardRoutes)
 app.use("/api/job", jobRoutes)
 app.use("/api", statusRoutes)
+app.use("/api", resetPasswordRoutes)
 
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 

@@ -78,6 +78,9 @@ import { login } from "../../api/auth";
            <input name="email" type="text" placeholder="Email" onChange={handleChange} required />
            <label>Enter Password</label>
            <input name="password" type="password" placeholder="Password" onChange={handleChange} required />
+           <div className="forgot-password-link">
+             <Link to="/forgotpassword">Forgot Password?</Link>
+           </div>
            {error && <p className="form-error">{error}</p>}
            <button type="submit">Login</button>
        </form>

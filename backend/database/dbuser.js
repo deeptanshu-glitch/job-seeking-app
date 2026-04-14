@@ -2,14 +2,14 @@
 import mongoose from "mongoose";
 
 const jobSeekSchema = new mongoose.Schema({
-  
+
   fullname: { type: String, required: true },
 
   username: { type: String, required: true, unique: true, trim: true },
 
   email: { type: String, required: true, unique: true, lowercase: true },
 
-  phonenumber: { type: String, required: true },
+  phonenumber: { type: String, required: true, unique: true },
 
   password: { type: String, required: true },
 
@@ -17,7 +17,7 @@ const jobSeekSchema = new mongoose.Schema({
 
   image: { type: String, default: null },
 
-  resume: { type: [String], default: [] },      
+  resume: { type: [String], default: [] },
 
   resumeText: { type: String, default: "" },
 
@@ -38,6 +38,10 @@ const jobSeekSchema = new mongoose.Schema({
   location: { type: String, default: "" },
 
   position: { type: String, default: "" },
+
+  resetOtp: { type: String, default: null },
+
+  resetOtpExpires: { type: Date, default: null },
 
 }, { timestamps: true });
 
