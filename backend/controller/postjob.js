@@ -2,12 +2,13 @@ import express from "express";
 import job from "../database/db.recruiter.js";
 import Application from "../database/db.application.js";
 import User from "../database/dbuser.js";
-import auth from "../middleware.js";
+import auth, { requireRole } from "../middleware.js";
+import { isValidObjectId } from "../utils/validation.js";
 
 const router = express.Router();
 
 // POST a new job
-router.post("/postjob", auth, async (req, res) => {
+router.post("/postjob", auth, requireRole("recruiter"), async (req, res) => {
     try {
         const { title, description, requirements, salary, experience, location, jobtype, position, companyName } = req.body;
 
@@ -73,6 +74,9 @@ router.get("/getalljob", auth, async (req, res) => {
 router.get("/getjobbyid/:id", async (req, res) => {
     try {
         const jobId = req.params.id;
+        if (!isValidObjectId(jobId)) {
+            return res.status(400).json({ error: "Invalid job ID", status: false });
+        }
         const singleJob = await job.findById(jobId);
         if (!singleJob) {
             return res.status(404).json({ error: "Job not found", status: false });
@@ -85,10 +89,10 @@ router.get("/getjobbyid/:id", async (req, res) => {
 });
 
 // GET all jobs posted by the recruiter
-router.get("/getalljobs", auth, async (req, res) => {
+router.get("/getalljobs", auth, requireRole("recruiter"), async (req, res) => {
     try {
-        const adminId = req.user._id || req.user.id;
-        const jobs = await job.find({ created_by: adminId }).sort({ createdAt: -1 });
+        const recruiterId = req.user._id || req.user.id;
+        const jobs = await job.find({ created_by: recruiterId }).sort({ createdAt: -1 });
         return res.status(200).json({ jobs: jobs || [], success: true });
     } catch (error) {
         console.error(error);
@@ -97,18 +101,29 @@ router.get("/getalljobs", auth, async (req, res) => {
 });
 
 // PUT update job status (active / closed / draft)
-router.put("/:id/status", auth, async (req, res) => {
+router.put("/:id/status", auth, requireRole("recruiter"), async (req, res) => {
     try {
         const { status } = req.body;
+        if (!isValidObjectId(req.params.id)) {
+            return res.status(400).json({ error: "Invalid job ID" });
+        }
+
         if (!['active', 'closed', 'draft'].includes(status)) {
             return res.status(400).json({ error: "Invalid status value" });
         }
+
+        const recruiterId = req.user._id || req.user.id;
+        const existingJob = await job.findById(req.params.id);
+        if (!existingJob) return res.status(404).json({ error: "Job not found" });
+        if (existingJob.created_by?.toString() !== recruiterId.toString()) {
+            return res.status(403).json({ error: "Unauthorized to update this job" });
+        }
+
         const updatedJob = await job.findByIdAndUpdate(
             req.params.id,
             { status },
             { new: true }
         );
-        if (!updatedJob) return res.status(404).json({ error: "Job not found" });
         return res.status(200).json({ message: "Job status updated", job: updatedJob, success: true });
     } catch (error) {
         console.error(error);
@@ -117,11 +132,14 @@ router.put("/:id/status", auth, async (req, res) => {
 });
 
 // DELETE a job
-router.delete("/:id", auth, async (req, res) => {
+router.delete("/:id", auth, requireRole("recruiter"), async (req, res) => {
     try {
+        if (!isValidObjectId(req.params.id)) {
+            return res.status(400).json({ error: "Invalid job ID" });
+        }
+
         const recruiterId = req.user._id || req.user.id;
         const foundJob = await job.findOne({ _id: req.params.id, created_by: recruiterId });
-        if (!foundJob) return res.status(404).json({ error: "Job not found or unauthorized" });
         await job.findByIdAndDelete(req.params.id);
         // Also delete all applications for this job
         await Application.deleteMany({ job: req.params.id });
@@ -133,9 +151,22 @@ router.delete("/:id", auth, async (req, res) => {
 });
 
 // GET applicants for a specific job
-router.get("/:id/applicants", auth, async (req, res) => {
+router.get("/:id/applicants", auth, requireRole("recruiter"), async (req, res) => {
     try {
-        const applications = await Application.find({ job: req.params.id })
+        const recruiterId = req.user._id || req.user.id;
+        const jobId = req.params.id;
+
+        if (!isValidObjectId(jobId)) {
+            return res.status(400).json({ error: "Invalid job ID" });
+        }
+
+        const foundJob = await job.findById(jobId);
+        if (!foundJob) return res.status(404).json({ error: "Job not found" });
+        if (foundJob.created_by?.toString() !== recruiterId.toString()) {
+            return res.status(403).json({ error: "Unauthorized to view applicants for this job" });
+        }
+
+        const applications = await Application.find({ job: jobId })
             .populate("applicant", "-password")
             .sort({ createdAt: -1 });
 

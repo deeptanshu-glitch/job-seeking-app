@@ -2,22 +2,52 @@ import express from "express"
 import bcrypt from "bcryptjs"
 
 import User from "../database/dbuser.js"
+import { isValidEmail, isValidPhone, isValidPassword, isValidRole } from "../utils/validation.js"
 
 const router = express.Router()
 
-router.post('/signup',async(req,res)=>{
-
-   try{
+router.post('/signup', async (req, res) => {
+   try {
         const { fullname, username, email, phonenumber, password, role } = req.body;
 
-        const existingUser = await User.findOne({ email });
-        if( existingUser ){
-            return res.status(400).json({error:"Email already exists"});
+        if (!fullname || !username || !email || !phonenumber || !password || !role) {
+            return res.status(400).json({ error: "All fields are required" });
         }
 
-        const hashedpassword = await bcrypt.hash(password,10)       // 10 is strong as well as more secured type. 8 is faster but less secure whereas 12 is more secure but slow
-       
-        const user = new User ({
+        if (!isValidEmail(email)) {
+            return res.status(400).json({ error: "Invalid email address" });
+        }
+
+        if (!isValidPhone(phonenumber)) {
+            return res.status(400).json({ error: "Invalid phone number" });
+        }
+
+        if (!isValidPassword(password)) {
+            return res.status(400).json({ error: "Password must be at least 6 characters" });
+        }
+
+        if (!isValidRole(role)) {
+            return res.status(400).json({ error: "Invalid role provided" });
+        }
+
+        const existingEmail = await User.findOne({ email });
+        if (existingEmail) {
+            return res.status(400).json({ error: "Email already exists" });
+        }
+
+        const existingUsername = await User.findOne({ username });
+        if (existingUsername) {
+            return res.status(400).json({ error: "Username already exists" });
+        }
+
+        const existingPhone = await User.findOne({ phonenumber });
+        if (existingPhone) {
+            return res.status(400).json({ error: "Phone number already exists" });
+        }
+
+        const hashedpassword = await bcrypt.hash(password, 10);
+
+        const user = new User({
             fullname,
             username,
             email,
@@ -27,16 +57,13 @@ router.post('/signup',async(req,res)=>{
         })
 
         await user.save();
-        res.status(201).json({ message:"User Registered Successfully" });
+        res.status(201).json({ message: "User Registered Successfully" });
 
-       } catch (err) {
-       res.status(500).json({ error:"User already exists" });
-       }
-
-       
-}); 
-
-
+   } catch (err) {
+       console.error(err);
+       res.status(500).json({ error: "Server error" });
+   }
+});
 
 export default router;
     

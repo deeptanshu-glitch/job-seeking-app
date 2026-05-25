@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken"
 import crypto from "crypto"
 import nodemailer from "nodemailer"
 import User from "../database/dbuser.js"
+import { isValidEmail, isValidPhone, isValidPassword } from "../utils/validation.js"
 
 const router = express.Router()
 
@@ -61,6 +62,14 @@ router.post('/forgotpassword', async (req, res) => {
             return res.status(400).json({ error: "Please provide email or phone number" });
         }
 
+        if (email && !isValidEmail(email)) {
+            return res.status(400).json({ error: "Invalid email address" });
+        }
+
+        if (phonenumber && !isValidPhone(phonenumber)) {
+            return res.status(400).json({ error: "Invalid phone number" });
+        }
+
         const query = email ? { email } : { phonenumber };
         const user = await User.findOne(query);
 
@@ -96,6 +105,14 @@ router.post('/verifyotp', async (req, res) => {
 
         if ((!email && !phonenumber) || !otp) {
             return res.status(400).json({ error: "Provide identifier and OTP" });
+        }
+
+        if (email && !isValidEmail(email)) {
+            return res.status(400).json({ error: "Invalid email address" });
+        }
+
+        if (phonenumber && !isValidPhone(phonenumber)) {
+            return res.status(400).json({ error: "Invalid phone number" });
         }
 
         const query = email ? { email } : { phonenumber };
@@ -143,6 +160,10 @@ router.post('/resetpassword', async (req, res) => {
 
         if (!newPassword) {
             return res.status(400).json({ error: "Provide new password" });
+        }
+
+        if (!isValidPassword(newPassword)) {
+            return res.status(400).json({ error: "Password must be at least 6 characters" });
         }
 
         let decoded;

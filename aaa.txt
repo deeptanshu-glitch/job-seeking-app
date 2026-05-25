@@ -15,3 +15,77 @@ packages to be downloaded...
 7. multer
 8. fs
 9. path
+
+
+
+
+What’s left to complete this project
+✅ Current app coverage
+The project already implements most core features:
+
+backend:
+signup/login with JWT
+password reset flow (forgotpassword, verifyotp, resetpassword)
+job posting, listing, detail, status update, delete
+job application and applicant review / accept / reject
+seeker dashboard and profile update
+frontend:
+login/signup/forgot password pages
+protected routes
+seeker dashboard
+recruiter/post job dashboard
+profile editing including image/resume upload
+job detail + apply flow
+Remaining work
+1) Backend production hardening
+Add role-based authorization checks
+only recruiters should post jobs, view own jobs/applicants, change job status, delete jobs
+only job seekers should apply for jobs
+Enforce ownership on sensitive actions
+ensure only job owner can update/delete that job
+ensure only appropriate recruiter can accept/reject applications
+Add better validation / sanitization
+tighten input validation for job fields, signup, profile update, OTP flows
+Fix email/SMS production config
+currently resetpassword.js logs OTP if email is not configured
+add real email provider credentials or remove dev fallback
+Add full error handling and consistent API response shapes
+2) Frontend polish / missing pieces
+Add role-aware UI/navigation
+currently routes exist, but ensure the UX clearly separates recruiter vs seeker paths
+Add logout / token expiration handling
+ProtectedRoute currently only checks if token exists
+Add frontend environment config
+no frontend .env file exists for VITE_API_URL, CLOUD_NAME, UPLOAD_PRESET
+Validate forms more strictly
+signup/login/job post/profile update all need stronger client-side validation and user feedback
+Confirm Cloudinary config works
+profile upload uses Cloudinary env vars, but frontend has no prepared env file in repo
+3) Deployment / docs / QA
+Add a project-specific README.md
+current frontend README is default Vite template
+document backend/frontend startup, env vars, and how to run both
+Add tests
+no automated tests are present
+Manual QA
+verify actual end-to-end flows:
+sign up as seeker/recruiter
+login
+profile update
+post job
+search jobs
+apply
+recruiter review/accept/reject
+reset password via OTP
+Setup production-ready config
+CORS policy if frontend and backend are served separately
+secure JWT secret handling
+optional file storage strategy for uploads
+Most important immediate tasks
+Add frontend .env and confirm cloudinary/upload settings
+Harden backend role authorization
+Add logout/token-expiry support
+Improve README and deployment instructions
+Bottom line: the app’s main functional flows are mostly built, 
+but it still needs security/role checks, environment setup, user-flow 
+polish, and deployment docs to be considered “complete.”

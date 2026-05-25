@@ -1,5 +1,5 @@
 import express from "express";
-import auth from "../middleware.js";
+import auth, { requireRole } from "../middleware.js";
 import User from "../database/dbuser.js";
 import Application from "../database/db.application.js";
 import Job from "../database/db.recruiter.js";
@@ -26,7 +26,7 @@ router.get("/dashboard", auth, async (req, res) => {
 });
 
 // Seeker-specific dashboard data
-router.get("/seeker-dashboard", auth, async (req, res) => {
+router.get("/seeker-dashboard", auth, requireRole("job seeker"), async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
     if (!user) return res.status(404).json({ error: "User not found" });
