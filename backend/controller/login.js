@@ -2,19 +2,21 @@ import express from "express"
 import bcryptjs from "bcryptjs"
 import jwt from "jsonwebtoken"
 import User from "../database/dbuser.js"
-import { isValidEmail, isValidPassword } from "../utils/validation.js"
+import { isValidEmail, isValidPassword, sanitizeString } from "../utils/validation.js"
 
 const router = express.Router()
 
 router.post('/login', async (req, res) => {
     try {
         const { email, password, role } = req.body;
+        const cleanEmail = sanitizeString(email).toLowerCase();
+        const cleanRole = sanitizeString(role);
 
-        if (!email || !password) {
+        if (!cleanEmail || !password) {
             return res.status(400).json({ error: "Email and password are required" });
         }
 
-        if (!isValidEmail(email)) {
+        if (!isValidEmail(cleanEmail)) {
             return res.status(400).json({ error: "Invalid email address" });
         }
 
@@ -22,13 +24,13 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ error: "Password must be at least 6 characters" });
         }
 
-        const user = await User.findOne({ email })
+        const user = await User.findOne({ email: cleanEmail })
 
         if (!user) {
             return res.status(400).json({ error: "Email doesn't exist" })
         }
 
-        if (user.role && role && user.role !== role) {
+        if (user.role && cleanRole && user.role !== cleanRole) {
             return res.status(400).json({ error: "Account doesn't exist for this role" })
         }
 

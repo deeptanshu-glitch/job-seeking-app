@@ -21,6 +21,22 @@ export const isValidRole = (role) => {
   return role === "job seeker" || role === "recruiter";
 };
 
+export const sanitizeString = (value) => {
+  if (typeof value !== "string") return "";
+  return value.trim().replace(/<[^>]*>/g, "");
+};
+
+export const sanitizeArray = (value) => {
+  if (!value) return [];
+  if (Array.isArray(value)) {
+    return value.map(v => sanitizeString(v)).filter(Boolean);
+  }
+  return String(value)
+    .split(",")
+    .map(v => sanitizeString(v))
+    .filter(Boolean);
+};
+
 export const isValidObjectId = (id) => {
   return mongoose.Types.ObjectId.isValid(id);
 };

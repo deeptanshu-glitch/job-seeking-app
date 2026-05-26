@@ -3,7 +3,7 @@ import job from "../database/db.recruiter.js";
 import Application from "../database/db.application.js";
 import User from "../database/dbuser.js";
 import auth, { requireRole } from "../middleware.js";
-import { isValidObjectId } from "../utils/validation.js";
+import { isValidObjectId, sanitizeString, sanitizeArray } from "../utils/validation.js";
 
 const router = express.Router();
 
@@ -11,29 +11,31 @@ const router = express.Router();
 router.post("/postjob", auth, requireRole("recruiter"), async (req, res) => {
     try {
         const { title, description, requirements, salary, experience, location, jobtype, position, companyName } = req.body;
+        const cleanTitle = sanitizeString(title);
+        const cleanDescription = sanitizeString(description);
+        const cleanLocation = sanitizeString(location);
+        const cleanJobType = sanitizeString(jobtype);
+        const cleanPosition = sanitizeString(position);
+        const cleanCompanyName = sanitizeString(companyName);
+        const cleanSalary = sanitizeString(salary) || "Not specified";
+        const cleanExperience = sanitizeString(experience) || "";
+        const reqList = sanitizeArray(requirements);
 
-        const userId = req.user._id || req.user.id;
-
-        const reqList = Array.isArray(requirements)
-            ? requirements
-            : requirements
-            ? requirements.split(",").map(r => r.trim()).filter(Boolean)
-            : [];
-
-        if (!title || !description || !location || !jobtype || !position || !companyName) {
-            return res.status(400).json({ error: "All required fields must be filled", status: false });
+        if (!cleanTitle || !cleanDescription || !cleanLocation || !cleanJobType || !cleanPosition || !cleanCompanyName) {
+            return res.status(400).json({ success: false, error: "All required fields must be filled" });
         }
 
+        const userId = req.user._id || req.user.id;
         const newJob = await job.create({
-            title,
-            description,
+            title: cleanTitle,
+            description: cleanDescription,
             requirements: reqList,
-            salary: salary || "Not specified",
-            experience: experience || "",
-            location,
-            jobtype,
-            position,
-            companyName,
+            salary: cleanSalary,
+            experience: cleanExperience,
+            location: cleanLocation,
+            jobtype: cleanJobType,
+            position: cleanPosition,
+            companyName: cleanCompanyName,
             created_by: userId,
             status: 'active'
         });
@@ -60,9 +62,6 @@ router.get("/getalljob", auth, async (req, res) => {
         };
 
         const jobs = await job.find(query).sort({ createdAt: -1 });
-        if (!jobs) {
-            return res.status(400).json({ error: "No jobs found", status: false });
-        }
         return res.status(200).json({ message: "Jobs fetched successfully", jobs, success: true });
     } catch (error) {
         console.error(error);
@@ -103,7 +102,7 @@ router.get("/getalljobs", auth, requireRole("recruiter"), async (req, res) => {
 // PUT update job status (active / closed / draft)
 router.put("/:id/status", auth, requireRole("recruiter"), async (req, res) => {
     try {
-        const { status } = req.body;
+        const status = sanitizeString(req.body.status);
         if (!isValidObjectId(req.params.id)) {
             return res.status(400).json({ error: "Invalid job ID" });
         }
@@ -140,6 +139,9 @@ router.delete("/:id", auth, requireRole("recruiter"), async (req, res) => {
 
         const recruiterId = req.user._id || req.user.id;
         const foundJob = await job.findOne({ _id: req.params.id, created_by: recruiterId });
+        if (!foundJob) {
+            return res.status(404).json({ success: false, error: "Job not found or unauthorized" });
+        }
         await job.findByIdAndDelete(req.params.id);
         // Also delete all applications for this job
         await Application.deleteMany({ job: req.params.id });

@@ -3,24 +3,31 @@ import bcryptjs from "bcryptjs"
 import jwt from "jsonwebtoken"
 import crypto from "crypto"
 import nodemailer from "nodemailer"
+import sendSms from "../utils/sms.js"
 import User from "../database/dbuser.js"
-import { isValidEmail, isValidPhone, isValidPassword } from "../utils/validation.js"
+import { isValidEmail, isValidPhone, isValidPassword, sanitizeString } from "../utils/validation.js"
 
 const router = express.Router()
 
-// Setup nodemailer transporter (Placeholder - needs real credentials in .env later)
-// For testing, we can use ethereal or just console.log the OTP if transporter fails
-const transporter = nodemailer.createTransport({
-    service: 'gmail', // You can change this to your preferred service
-    auth: {
-        user: process.env.EMAIL_USER || 'your-email@gmail.com',
-        pass: process.env.EMAIL_PASS || 'your-app-password'
-    }
-});
+// Setup nodemailer transporter using SMTP credentials from env
+let transporter;
+if (process.env.EMAIL_HOST && process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+    transporter = nodemailer.createTransport({
+        host: process.env.EMAIL_HOST,
+        port: process.env.EMAIL_PORT ? Number(process.env.EMAIL_PORT) : 587,
+        secure: process.env.EMAIL_SECURE === 'true',
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+        }
+    });
+} else {
+    transporter = null; // Development fallback logged below
+}
 
 // Middleware to log OTP if email isn't configured properly
 const sendOtpEmail = async (email, otp) => {
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    if (!transporter) {
         console.log(`\n\n-----------------------------------------`);
         console.log(`[DEVELOPMENT MODE] Email not configured.`);
         console.log(`OTP for ${email} is: ${otp}`);
@@ -29,7 +36,7 @@ const sendOtpEmail = async (email, otp) => {
     }
 
     const mailOptions = {
-        from: process.env.EMAIL_USER,
+        from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
         to: email,
         subject: 'Password Reset OTP',
         text: `Your OTP for password reset is: ${otp}. It is valid for 10 minutes.`
@@ -46,31 +53,37 @@ const sendOtpEmail = async (email, otp) => {
 
 
 const sendOtpSms = async (phone, otp) => {
-    // Placeholder for actual SMS integration (Twilio, etc.)
-    console.log(`\n\n-----------------------------------------`);
-    console.log(`[DEVELOPMENT MODE] SMS not configured.`);
-    console.log(`OTP for ${phone} is: ${otp}`);
-    console.log(`-----------------------------------------\n\n`);
+    try {
+        const sent = await sendSms(phone, `Your OTP for password reset is: ${otp}. It is valid for 10 minutes.`);
+        if (!sent) {
+            console.log(`\n\n[DEVELOPMENT FAILOVER] OTP for ${phone} is: ${otp}\n\n`);
+        }
+    } catch (err) {
+        console.error('SMS send error:', err);
+        console.log(`\n\n[DEVELOPMENT FAILOVER] OTP for ${phone} is: ${otp}\n\n`);
+    }
 }
 
 
 router.post('/forgotpassword', async (req, res) => {
     try {
         const { email, phonenumber } = req.body;
+        const cleanEmail = sanitizeString(email).toLowerCase();
+        const cleanPhone = sanitizeString(phonenumber);
 
-        if (!email && !phonenumber) {
+        if (!cleanEmail && !cleanPhone) {
             return res.status(400).json({ error: "Please provide email or phone number" });
         }
 
-        if (email && !isValidEmail(email)) {
+        if (cleanEmail && !isValidEmail(cleanEmail)) {
             return res.status(400).json({ error: "Invalid email address" });
         }
 
-        if (phonenumber && !isValidPhone(phonenumber)) {
+        if (cleanPhone && !isValidPhone(cleanPhone)) {
             return res.status(400).json({ error: "Invalid phone number" });
         }
 
-        const query = email ? { email } : { phonenumber };
+        const query = cleanEmail ? { email: cleanEmail } : { phonenumber: cleanPhone };
         const user = await User.findOne(query);
 
         if (!user) {
@@ -85,11 +98,11 @@ router.post('/forgotpassword', async (req, res) => {
         user.resetOtpExpires = Date.now() + 5 * 60 * 1000;
         await user.save();
 
-        if (email) {
-            await sendOtpEmail(email, otp);
+        if (cleanEmail) {
+            await sendOtpEmail(cleanEmail, otp);
             res.json({ message: "OTP sent to your email" });
         } else {
-            await sendOtpSms(phonenumber, otp);
+            await sendOtpSms(cleanPhone, otp);
             res.json({ message: "OTP sent to your phone number" });
         }
 
@@ -102,20 +115,22 @@ router.post('/forgotpassword', async (req, res) => {
 router.post('/verifyotp', async (req, res) => {
     try {
         const { email, phonenumber, otp } = req.body;
+        const cleanEmail = sanitizeString(email).toLowerCase();
+        const cleanPhone = sanitizeString(phonenumber);
 
-        if ((!email && !phonenumber) || !otp) {
+        if ((!cleanEmail && !cleanPhone) || !otp) {
             return res.status(400).json({ error: "Provide identifier and OTP" });
         }
 
-        if (email && !isValidEmail(email)) {
+        if (cleanEmail && !isValidEmail(cleanEmail)) {
             return res.status(400).json({ error: "Invalid email address" });
         }
 
-        if (phonenumber && !isValidPhone(phonenumber)) {
+        if (cleanPhone && !isValidPhone(cleanPhone)) {
             return res.status(400).json({ error: "Invalid phone number" });
         }
 
-        const query = email ? { email } : { phonenumber };
+        const query = cleanEmail ? { email: cleanEmail } : { phonenumber: cleanPhone };
         const user = await User.findOne(query);
 
         if (!user) {
@@ -125,6 +140,10 @@ router.post('/verifyotp', async (req, res) => {
         if (user.resetOtp !== otp || user.resetOtpExpires < Date.now()) {
             return res.status(400).json({ error: "Invalid or expired OTP" });
         }
+
+        user.resetOtp = null;
+        user.resetOtpExpires = null;
+        await user.save();
 
         // Generate temporary token for resetting password (valid for 15 mins)
         const resetToken = jwt.sign(
