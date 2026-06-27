@@ -44,3 +44,28 @@
   font-size: 14px;
   margin-top: 4px;
 }
+
+@media (max-width: 768px) {
+  .profile-info {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .profile-pic {
+    margin-top: -50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cover-photo {
+    height: 130px;
+  }
+  .profile-pic {
+    width: 90px;
+    height: 90px;
+    margin-top: -45px;
+  }
+  .profile-text h2 {
+    font-size: 20px;
+  }
+}

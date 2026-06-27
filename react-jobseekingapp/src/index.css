@@ -43,3 +43,35 @@ html, body, #root {
 .jd-toast-error {
   background: #ef4444;
 }
+
+@media (max-width: 900px) {
+  html {
+    font-size: 15px;
+  }
+  body {
+    padding: 0 12px;
+  }
+  .jd-toast {
+    right: 16px;
+    left: auto;
+    width: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  html {
+    font-size: 14px;
+  }
+  body {
+    padding: 0 10px;
+  }
+  #root {
+    min-height: auto;
+  }
+  .jd-toast {
+    width: calc(100% - 24px);
+    left: 50%;
+    transform: translateX(-50%);
+    right: unset;
+  }
+}

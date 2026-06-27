@@ -472,6 +472,69 @@
   }
 }
 
+@media (max-width: 1024px) {
+  .profile-container {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+  .profile-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .profile-info {
+    width: 100%;
+    gap: 18px;
+  }
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .form-actions {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 640px) {
+  .profile-container {
+    padding: 16px;
+  }
+  .profile-content {
+    padding: 20px;
+  }
+  .profile-header {
+    gap: 14px;
+  }
+  .profile-image,
+  .profile-image-edit-mode {
+    width: 90px;
+    height: 90px;
+  }
+  .profile-image img,
+  .profile-image-edit-mode img {
+    width: 90px;
+    height: 90px;
+  }
+  .profile-info h1 {
+    font-size: 20px;
+  }
+  .edit-btn {
+    position: static;
+    width: 100%;
+    text-align: center;
+    margin-top: 12px;
+  }
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .right-card,
+  .profile-section,
+  .profile-content {
+    width: 100%;
+  }
+}
+
 /* ── Resume block ─────────────────────────────────── */
 .resume-input input[type="file"] {
   display: block;

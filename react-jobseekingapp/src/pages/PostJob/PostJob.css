@@ -1339,3 +1339,27 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 640px) {
+  .center-content {
+    padding: 18px 14px;
+  }
+  .post-container {
+    padding-bottom: 24px;
+  }
+  .column-right {
+    border-top: 1px solid var(--gray-200);
+    padding: 18px 14px;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .job-card {
+    padding: 16px;
+  }
+  .stats-grid,
+  .form-row,
+  .rp-mini-stats {
+    gap: 12px;
+  }
+}
