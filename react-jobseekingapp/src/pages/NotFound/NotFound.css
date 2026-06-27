@@ -58,3 +58,36 @@
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(245, 158, 11, 0.50);
 }
+
+@media (max-width: 900px) {
+  .notfound-content {
+    padding: 48px 30px;
+  }
+  .notfound-content h1 {
+    font-size: 64px;
+  }
+}
+
+@media (max-width: 640px) {
+  .notfound-page {
+    padding: 16px;
+  }
+  .notfound-content {
+    padding: 34px 20px;
+    border-radius: 20px;
+  }
+  .notfound-content h1 {
+    font-size: 48px;
+  }
+  .notfound-content h2 {
+    font-size: 20px;
+  }
+  .notfound-content p {
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+  .notfound-btn {
+    width: 100%;
+    padding: 14px 18px;
+  }
+}

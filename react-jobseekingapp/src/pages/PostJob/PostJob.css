@@ -1309,6 +1309,26 @@
 .empty-state h4 { margin: 0 0 8px; font-size: 18px; color: var(--gray-700); font-weight: 700; }
 .empty-state p { color: var(--gray-400); margin-bottom: 20px; font-size: 14px; line-height: 1.6; }
 
+/* ── Mobile back button ─────────────────────────── */
+.mobile-back-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.18);
+}
+
+.mobile-back-btn:hover {
+  background: #fde68a;
+}
+
 /* ── Responsive ──────────────────────────────────── */
 @media (max-width: 1100px) {
   .post-container {
@@ -1317,16 +1337,33 @@
 }
 @media (max-width: 900px) {
   .post-container {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
     height: auto;
     overflow: visible;
+    padding-bottom: 16px;
   }
   .column-left {
     display: none;
   }
+  .column-center,
   .column-right {
+    width: 100%;
+    max-width: 100%;
+    min-height: 0;
+    overflow: visible;
+    display: block;
+  }
+  .column-center {
+    order: 1;
+  }
+  .column-right {
+    order: 2;
     border-left: none;
     border-top: 1px solid var(--gray-200);
+    margin-top: 20px;
+    padding: 20px 16px;
   }
   .center-content {
     padding: 20px 16px;
@@ -1337,5 +1374,69 @@
   }
   .form-row {
     grid-template-columns: 1fr;
+  }
+  .rp-panel-title,
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .center-content {
+    padding: 18px 14px;
+  }
+  .post-container {
+    padding-bottom: 24px;
+  }
+  .column-right {
+    padding: 18px 14px;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .job-card {
+    padding: 16px;
+  }
+  .stats-grid,
+  .form-row,
+  .rp-mini-stats {
+    gap: 12px;
+  }
+  .rp-panel-title,
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .post-job-header {
+    position: relative;
+    padding-right: 48px;
+  }
+  .mobile-back-btn {
+    display: inline-flex;
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+  .job-card-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .job-card-actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .applicant-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .applicant-right {
+    align-items: flex-start;
+  }
+  .form-actions {
+    flex-direction: column;
+    align-items: stretch;
   }
 }

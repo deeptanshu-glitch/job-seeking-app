@@ -790,11 +790,19 @@ function Postjob() {
                     {/* ── POST A JOB FORM ───────────────── */}
                     {currentView === "post-job" && !selectedJob && !selectedApplicant && (
                         <div className="center-content">
-                            <div className="page-header">
+                            <div className="page-header post-job-header">
                                 <div>
                                     <h2>Post a New Job</h2>
                                     <p className="page-sub">Fill in the details to attract the right candidates.</p>
                                 </div>
+                                <button
+                                    type="button"
+                                    className="mobile-back-btn"
+                                    onClick={() => handleViewChange("overview")}
+                                    aria-label="Back to overview"
+                                >
+                                    ✕
+                                </button>
                             </div>
 
                             <form onSubmit={handleSubmit} className="post-job-form" noValidate>
