@@ -2,20 +2,22 @@
 import mongoose from "mongoose";
 
 const jobSeekSchema = new mongoose.Schema({
-  
+
   fullname: { type: String, required: true },
 
   username: { type: String, required: true, unique: true, trim: true },
 
   email: { type: String, required: true, unique: true, lowercase: true },
 
-  phonenumber: { type: String, required: true },
+  phonenumber: { type: String, required: true, unique: true },
 
   password: { type: String, required: true },
 
+  role: { type: String, enum: ["job seeker", "recruiter"], default: "job seeker", required: true },
+
   image: { type: String, default: null },
 
-  resume: { type: [String], default: [] },      //to keep multiple files we use array sign []
+  resume: { type: [String], default: [] },
 
   resumeText: { type: String, default: "" },
 
@@ -25,8 +27,31 @@ const jobSeekSchema = new mongoose.Schema({
 
   skills: { type: String, default: "" },
 
-  links: { type: String, default: "" }
+  links: { type: String, default: "" },
+
+  companyName: { type: String, default: "" },
+
+  companyWebsite: { type: String, default: "" },
+
+  companyDescription: { type: String, default: "" },
+
+  location: { type: String, default: "" },
+
+  position: { type: String, default: "" },
+
+  notifications: [{
+    message: { type: String, required: true },
+    type: { type: String, enum: ["info", "success", "warning", "error"], default: "info" },
+    read: { type: Boolean, default: false },
+    createdAt: { type: Date, default: Date.now }
+  }],
+
+  resetOtp: { type: String, default: null },
+
+  resetOtpExpires: { type: Date, default: null },
 
 }, { timestamps: true });
 
-export default mongoose.model("User", jobSeekSchema);
+const User = mongoose.model("User", jobSeekSchema);
+
+export default User

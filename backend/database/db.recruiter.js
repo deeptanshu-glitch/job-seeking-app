@@ -6,22 +6,28 @@ const recruiterSchema = new mongoose.Schema({
 
     description: {type: String , required: true},
     
-    requirements: {type: String , required: true},
+    requirements: {type: [String], default: []},
     
     location: {type: String , required: true},
     
-    salary: {type: Number , required: true},
-    
-    jobtype: {type: String , required: true},
+    salary: {type: String , default: "Not specified"},
     
     jobtype: {type: String , required: true},
 
-    company: {type: mongoose.Schema.Types.ObjectId, ref: "Company" , required: true},
+    experience: {type: String, default: ""},
+    
+    companyName: {type: String, required: true},
     
     position: {type: String , required: true},
 
-    application: {type: mongoose.Schema.Types.ObjectId, ref: "Application" , default: null},
-    
-})
+    status: {type: String, enum: ['active', 'closed', 'draft'], default: 'active'},
 
-export const job = mongoose.model("recruition" , recruiterSchema )
+    applications: [{type: mongoose.Schema.Types.ObjectId, ref: "Application"}],
+    
+    created_by: {type: mongoose.Schema.Types.ObjectId, ref: "User" , default: null},
+    
+},{timestamps: true})
+
+const job = mongoose.model("job" , recruiterSchema )
+
+export default job
