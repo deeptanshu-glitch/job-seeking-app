@@ -3,10 +3,11 @@ import bcrypt from "bcryptjs"
 
 import User from "../database/dbuser.js"
 import { isValidEmail, isValidPhone, isValidPassword, isValidRole, sanitizeString } from "../utils/validation.js"
+import { runValidation, signupChecks } from "../utils/validators.js"
 
 const router = express.Router()
 
-router.post('/signup', async (req, res) => {
+router.post('/signup', runValidation(signupChecks), async (req, res) => {
    try {
         const { fullname, username, email, phonenumber, password, role } = req.body;
         const cleanFullname = sanitizeString(fullname);
@@ -16,23 +17,23 @@ router.post('/signup', async (req, res) => {
         const cleanRole = sanitizeString(role);
 
         if (!cleanFullname || !cleanUsername || !cleanEmail || !cleanPhone || !password || !cleanRole) {
-            return res.status(400).json({ error: "All fields are required" });
+            return res.error("All fields are required", 400);
         }
 
         if (!isValidEmail(cleanEmail)) {
-            return res.status(400).json({ error: "Invalid email address" });
+            return res.error("Invalid email address", 400);
         }
 
         if (!isValidPhone(cleanPhone)) {
-            return res.status(400).json({ error: "Invalid phone number" });
+            return res.error("Invalid phone number", 400);
         }
 
         if (!isValidPassword(password)) {
-            return res.status(400).json({ error: "Password must be at least 6 characters" });
+            return res.error("Password must be at least 6 characters", 400);
         }
 
         if (!isValidRole(cleanRole)) {
-            return res.status(400).json({ error: "Invalid role provided" });
+            return res.error("Invalid role provided", 400);
         }
 
         const existingEmail = await User.findOne({ email: cleanEmail });
@@ -62,11 +63,11 @@ router.post('/signup', async (req, res) => {
         })
 
         await user.save();
-        res.status(201).json({ message: "User Registered Successfully", success: true });
+        return res.status(201).json({ message: "User Registered Successfully", success: true });
 
    } catch (err) {
        console.error(err);
-       res.status(500).json({ success: false, error: "Server error" });
+       return res.error("Server error", 500, err.message);
    }
 });
 

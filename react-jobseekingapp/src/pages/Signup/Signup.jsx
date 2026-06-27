@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import "./Signup.css";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { signup } from "../../api/auth";
+import { signup, googleAuth } from "../../api/auth";
+import Cookies from "js-cookie";
 
 
 
@@ -27,6 +28,7 @@ function Signup() {
   
 const handleSubmit = async (e) => {
   e.preventDefault();
+    setIsLoading(true);
 
   if (form.password !== form.confirmpassword) {
     alert("Passwords do not match");
@@ -52,6 +54,50 @@ const handleSubmit = async (e) => {
     alert(err.response?.data?.error || "Server Error");
   }
 };
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const googleButtonRef = useRef(null);
+
+  useEffect(() => {
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    if (!clientId) return;
+
+    const initGSI = () => {
+      if (!window.google?.accounts?.id) return;
+      window.google.accounts.id.initialize({
+        client_id: clientId,
+        callback: async (response) => {
+          if (!response?.credential) return;
+          setIsLoading(true);
+          try {
+            const res = await googleAuth({ id_token: response.credential });
+            Cookies.set("token", res.data.token, { expires: 7 });
+            Cookies.set("user", JSON.stringify(res.data.user), { expires: 7 });
+            navigate('/dashboard');
+          } catch (err) {
+            alert(err.response?.data?.error || 'Google sign-in failed');
+            setIsLoading(false);
+          }
+        }
+      });
+
+      if (googleButtonRef.current) {
+        window.google.accounts.id.renderButton(googleButtonRef.current, { theme: 'outline', size: 'large' });
+      }
+    };
+
+    if (window.google && window.google.accounts && window.google.accounts.id) {
+      initGSI();
+    } else {
+      const script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      script.onload = initGSI;
+      document.head.appendChild(script);
+    }
+  }, []);
 
 
 

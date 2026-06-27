@@ -176,6 +176,106 @@
   border-color: var(--yellow-200);
 }
 
+.notification-card {
+  margin-bottom: 24px;
+}
+
+.notification-list {
+  display: grid;
+  gap: 14px;
+}
+
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+}
+.notification-item-unread {
+  background: #fffdf6;
+  border-color: #fde68a;
+}
+
+.notification-left {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.notification-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.dot-info { background: #3b82f6; }
+.dot-success { background: #22c55e; }
+.dot-warning { background: #f59e0b; }
+.dot-error { background: #ef4444; }
+
+.notification-message {
+  font-size: 14px;
+  color: var(--gray-800);
+  line-height: 1.55;
+  min-width: 0;
+}
+
+.notification-time {
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-top: 4px;
+}
+
+.notification-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.notification-status {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gray-500);
+  white-space: nowrap;
+  align-self: center;
+}
+
+.notification-status-unread {
+  color: var(--yellow-700);
+}
+
+.notification-mark-btn,
+.mark-read-btn {
+  border: none;
+  background: #fef3c7;
+  color: #b45309;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+.notification-mark-btn:hover,
+.mark-read-btn:hover {
+  background: #fde68a;
+  transform: translateY(-1px);
+}
+.notification-mark-btn:disabled,
+.mark-read-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
 /* ── Section Heading ────────────────────────────────── */
 .section-heading {
   display: flex;
@@ -189,8 +289,13 @@
 .section-heading .section-icon {
   font-size: 20px;
 }
-.section-count {
+.section-actions {
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-count {
   font-size: 11px;
   font-weight: 700;
   background: var(--yellow-100);

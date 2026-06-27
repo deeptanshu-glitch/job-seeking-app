@@ -10,8 +10,7 @@ import dashboardRoutes from "./controller/dashboard.js";
 import jobRoutes from "./controller/postjob.js";
 import statusRoutes from "./controller/status.js";
 import resetPasswordRoutes from "./controller/resetpassword.js";
-import { createRateLimiter } from "./utils/rateLimiter.js";
-import { createRedisRateLimiter } from "./utils/redisRateLimiter.js";
+import googleAuthRoutes from "./controller/googleAuth.js";
 import responseMiddleware from "./utils/response.js";
 import logger from "./utils/logger.js";
 
@@ -39,28 +38,13 @@ app.use(responseMiddleware);
 app.use(express.json({ limit: "10kb" }))
 app.use(express.urlencoded({ extended: true, limit: "10kb" }))
 
-const authLimiter = createRateLimiter({ windowMs: 60 * 1000, max: 5, message: "Too many auth attempts. Please wait a minute and try again." });
-const generalLimiter = createRateLimiter({ windowMs: 60 * 1000, max: 20, message: "Too many requests. Please wait a minute and try again." });
-
-let effectiveGeneralLimiter = generalLimiter;
-if (process.env.REDIS_URL) {
-  try {
-    effectiveGeneralLimiter = createRedisRateLimiter({ windowMs: 60 * 1000, max: 200 });
-    logger.info('Using Redis-backed rate limiter');
-  } catch (err) {
-    logger.warn('Failed to initialize Redis limiter, falling back to in-memory limiter', err);
-    effectiveGeneralLimiter = generalLimiter;
-  }
-}
-
-app.use(effectiveGeneralLimiter)
-
 app.use("/api", myRoutes);
-app.use("/api", authLimiter, loginRoutes)
+app.use("/api", loginRoutes)
 app.use("/api", dashboardRoutes)
 app.use("/api/job", jobRoutes)
 app.use("/api", statusRoutes)
-app.use("/api", authLimiter, resetPasswordRoutes)
+app.use("/api", resetPasswordRoutes)
+app.use("/api", googleAuthRoutes)
 
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 

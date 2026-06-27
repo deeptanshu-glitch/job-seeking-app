@@ -6,6 +6,7 @@ import nodemailer from "nodemailer"
 import sendSms from "../utils/sms.js"
 import User from "../database/dbuser.js"
 import { isValidEmail, isValidPhone, isValidPassword, sanitizeString } from "../utils/validation.js"
+import { runValidation, forgotPasswordChecks, verifyOtpChecks, resetPasswordChecks } from "../utils/validators.js"
 
 const router = express.Router()
 
@@ -65,29 +66,29 @@ const sendOtpSms = async (phone, otp) => {
 }
 
 
-router.post('/forgotpassword', async (req, res) => {
+router.post('/forgotpassword', runValidation(forgotPasswordChecks), async (req, res) => {
     try {
         const { email, phonenumber } = req.body;
         const cleanEmail = sanitizeString(email).toLowerCase();
         const cleanPhone = sanitizeString(phonenumber);
 
         if (!cleanEmail && !cleanPhone) {
-            return res.status(400).json({ error: "Please provide email or phone number" });
+            return res.error("Please provide email or phone number", 400);
         }
 
         if (cleanEmail && !isValidEmail(cleanEmail)) {
-            return res.status(400).json({ error: "Invalid email address" });
+            return res.error("Invalid email address", 400);
         }
 
         if (cleanPhone && !isValidPhone(cleanPhone)) {
-            return res.status(400).json({ error: "Invalid phone number" });
+            return res.error("Invalid phone number", 400);
         }
 
         const query = cleanEmail ? { email: cleanEmail } : { phonenumber: cleanPhone };
         const user = await User.findOne(query);
 
         if (!user) {
-            return res.status(404).json({ error: "User not found with this identifier" });
+            return res.error("User not found with this identifier", 404);
         }
 
         // Generate 6-digit OTP
@@ -100,45 +101,44 @@ router.post('/forgotpassword', async (req, res) => {
 
         if (cleanEmail) {
             await sendOtpEmail(cleanEmail, otp);
-            res.json({ message: "OTP sent to your email" });
-        } else {
-            await sendOtpSms(cleanPhone, otp);
-            res.json({ message: "OTP sent to your phone number" });
+            return res.success({ message: "OTP sent to your email" });
         }
+        await sendOtpSms(cleanPhone, otp);
+        return res.success({ message: "OTP sent to your phone number" });
 
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: "Server error" });
+        return res.error("Server error", 500, err.message);
     }
 });
 
-router.post('/verifyotp', async (req, res) => {
+router.post('/verifyotp', runValidation(verifyOtpChecks), async (req, res) => {
     try {
         const { email, phonenumber, otp } = req.body;
         const cleanEmail = sanitizeString(email).toLowerCase();
         const cleanPhone = sanitizeString(phonenumber);
 
         if ((!cleanEmail && !cleanPhone) || !otp) {
-            return res.status(400).json({ error: "Provide identifier and OTP" });
+            return res.error("Provide identifier and OTP", 400);
         }
 
         if (cleanEmail && !isValidEmail(cleanEmail)) {
-            return res.status(400).json({ error: "Invalid email address" });
+            return res.error("Invalid email address", 400);
         }
 
         if (cleanPhone && !isValidPhone(cleanPhone)) {
-            return res.status(400).json({ error: "Invalid phone number" });
+            return res.error("Invalid phone number", 400);
         }
 
         const query = cleanEmail ? { email: cleanEmail } : { phonenumber: cleanPhone };
         const user = await User.findOne(query);
 
         if (!user) {
-            return res.status(404).json({ error: "User not found" });
+            return res.error("User not found", 404);
         }
 
         if (user.resetOtp !== otp || user.resetOtpExpires < Date.now()) {
-            return res.status(400).json({ error: "Invalid or expired OTP" });
+            return res.error("Invalid or expired OTP", 400);
         }
 
         user.resetOtp = null;
@@ -155,51 +155,43 @@ router.post('/verifyotp', async (req, res) => {
         // Optionally clear OTP here, or after password reset
         // Doing it after reset is safer in case they close the page before typing new password
 
-        res.json({
+        return res.success({
             message: "OTP verified successfully",
             resetToken
         });
 
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: "Server error" });
+        return res.error("Server error", 500, err.message);
     }
 });
 
-router.post('/resetpassword', async (req, res) => {
+router.post('/resetpassword', runValidation(resetPasswordChecks), async (req, res) => {
     try {
         const { newPassword } = req.body;
         const authHeader = req.headers.authorization;
 
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({ error: "Reset token missing" });
+            return res.error("Reset token missing", 401);
         }
 
         const token = authHeader.split(' ')[1];
-
-        if (!newPassword) {
-            return res.status(400).json({ error: "Provide new password" });
-        }
-
-        if (!isValidPassword(newPassword)) {
-            return res.status(400).json({ error: "Password must be at least 6 characters" });
-        }
 
         let decoded;
         try {
             decoded = jwt.verify(token, process.env.JWT_SECRET);
         } catch (error) {
-            return res.status(401).json({ error: "Invalid or expired reset token" });
+            return res.error("Invalid or expired reset token", 401);
         }
 
         if (!decoded.resetPermission) {
-            return res.status(401).json({ error: "Invalid token type" });
+            return res.error("Invalid token type", 401);
         }
 
         const user = await User.findById(decoded.id);
 
         if (!user) {
-            return res.status(404).json({ error: "User not found" });
+            return res.error("User not found", 404);
         }
 
         const salt = await bcryptjs.genSalt(10);
@@ -211,11 +203,11 @@ router.post('/resetpassword', async (req, res) => {
 
         await user.save();
 
-        res.json({ message: "Password reset successfully. You can now login." });
+        return res.success({ message: "Password reset successfully. You can now login." });
 
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: "Server error" });
+        return res.error("Server error", 500, err.message);
     }
 });
 

@@ -1,8 +1,10 @@
 import express from "express";
 import Job from "../database/db.recruiter.js";
-import Application from "../database/db.application.js"; 
+import Application from "../database/db.application.js";
+import User from "../database/dbuser.js";
 import auth, { requireRole } from "../middleware.js";
 import { isValidObjectId } from "../utils/validation.js";
+import sendSms from "../utils/sms.js";
 
 const router = express.Router();
 
@@ -60,8 +62,8 @@ router.put("/application/:appId/:action", auth, requireRole("recruiter"), async 
       return res.status(400).json({ error: "Invalid action" });
     }
 
-    const application = await Application.findById(appId).populate("job");
-    if (!application || !application.job) {
+    const application = await Application.findById(appId).populate("job").populate("applicant");
+    if (!application || !application.job || !application.applicant) {
       return res.status(404).json({ error: "Application not found" });
     }
 
@@ -72,7 +74,28 @@ router.put("/application/:appId/:action", auth, requireRole("recruiter"), async 
 
     application.status = action === "accept" ? "accepted" : "rejected";
     await application.save();
-    await application.populate("applicant");
+
+    const notificationMessage = action === "accept"
+      ? `Your application for "${application.job.title}" at ${application.job.companyName} has been accepted. A recruiter will contact you soon with next steps.`
+      : `Your application for "${application.job.title}" at ${application.job.companyName} was not selected. Keep applying — new opportunities are waiting.`;
+
+    await User.findByIdAndUpdate(application.applicant._id, {
+      $push: {
+        notifications: {
+          message: notificationMessage,
+          type: action === "accept" ? "success" : "warning",
+          read: false,
+          createdAt: new Date()
+        }
+      }
+    });
+
+    if (action === "accept" && application.applicant?.phonenumber) {
+      await sendSms(
+        application.applicant.phonenumber,
+        `Good news! Your application for "${application.job.title}" at ${application.job.companyName} has been accepted. Please check your dashboard for next steps.`
+      );
+    }
 
     return res.status(200).json({ message: `Application ${action}ed`, application });
   } catch (error) {

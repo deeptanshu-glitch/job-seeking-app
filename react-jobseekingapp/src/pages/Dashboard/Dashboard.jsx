@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import CollapsibleExample from "../../components/NavAfter";
-import { getSeekerDashboard } from "../../api/dashboard";
+import { getSeekerDashboard, markNotificationsAsRead } from "../../api/dashboard";
 import "./Dashboard.css";
 
 // ── Helpers ──────────────────────────────────────────
@@ -61,7 +61,9 @@ function SkeletonCard() {
 function Dash() {
   const [loading, setLoading] = useState(true);
   const [dashData, setDashData] = useState(null);
+  const [notifications, setNotifications] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isUpdatingNotifications, setIsUpdatingNotifications] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -77,6 +79,7 @@ function Dash() {
       try {
         const res = await getSeekerDashboard();
         setDashData(res.data);
+        setNotifications(res.data.notifications || []);
       } catch (err) {
         console.error("Dashboard fetch error:", err);
       } finally {
@@ -106,7 +109,31 @@ function Dash() {
   const pendingCount   = applications.filter((a) => a.status === "pending").length;
   const acceptedCount  = applications.filter((a) => a.status === "accepted").length;
   const rejectedCount  = applications.filter((a) => a.status === "rejected").length;
+  const unreadCount    = notifications.filter((n) => !n.read).length;
   const profileComplete = profileCompletion >= 100;
+
+  const applicationStatusMap = applications.reduce((map, app) => {
+    if (app.job?._id) {
+      map[app.job._id.toString()] = app.status;
+    }
+    return map;
+  }, {});
+
+  const latestJobActionText = (jobId) => {
+    const status = applicationStatusMap[jobId?.toString()];
+    if (status === "accepted") return "✅ Accepted";
+    if (status === "pending") return "⏳ Applied";
+    if (status === "rejected") return "❌ Rejected";
+    return "Apply →";
+  };
+
+  const latestJobActionStyle = (jobId) => {
+    const status = applicationStatusMap[jobId?.toString()];
+    if (status === "accepted") return { backgroundColor: '#d1fae5', color: '#166534' };
+    if (status === "pending") return { backgroundColor: '#fef3c7', color: '#92400e' };
+    if (status === "rejected") return { backgroundColor: '#fee2e2', color: '#991b1b' };
+    return { backgroundColor: '#fef3c7', color: '#d97706' };
+  };
 
   const filteredJobs = latestJobs.filter(j => 
     !searchQuery || 
@@ -114,6 +141,28 @@ function Dash() {
     (j.companyName && j.companyName.toLowerCase().includes(searchQuery.toLowerCase())) ||
     (j.location && j.location.toLowerCase().includes(searchQuery.toLowerCase()))
   );
+
+  const handleMarkNotificationsAsRead = async (ids = []) => {
+    if (isUpdatingNotifications) return;
+
+    try {
+      setIsUpdatingNotifications(true);
+      const res = await markNotificationsAsRead(ids);
+      const nextNotifications = res.data?.notifications || [];
+      setNotifications(nextNotifications);
+      setDashData((prev) => prev ? { ...prev, notifications: nextNotifications } : prev);
+
+      const storedUser = Cookies.get("user");
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        Cookies.set("user", JSON.stringify({ ...parsedUser, notifications: nextNotifications }), { expires: 7 });
+      }
+    } catch (err) {
+      console.error("Failed to update notifications", err);
+    } finally {
+      setIsUpdatingNotifications(false);
+    }
+  };
 
   return (
     <div className="seeker-dashboard">
@@ -186,6 +235,61 @@ function Dash() {
             Profile 100% complete — recruiters can find you easily!
           </div>
         )}
+
+        <div id="notifications" className="dash-card notification-card">
+          <div className="section-heading">
+            <span className="section-icon">🔔</span>
+            Notifications
+            <div className="section-actions">
+              {unreadCount > 0 && (
+                <button
+                  className="mark-read-btn"
+                  onClick={() => handleMarkNotificationsAsRead()}
+                  disabled={isUpdatingNotifications}
+                >
+                  {isUpdatingNotifications ? "Updating..." : "Mark all as read"}
+                </button>
+              )}
+              <span className="section-count">{unreadCount} unread</span>
+            </div>
+          </div>
+
+          {notifications.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-icon">🔕</div>
+              <h4>No notifications yet</h4>
+              <p>You'll see updates here when a recruiter responds to your application.</p>
+            </div>
+          ) : (
+            <div className="notification-list">
+              {notifications.map((note) => (
+                <div key={note._id || note.createdAt} className={`notification-item ${note.read ? '' : 'notification-item-unread'}`}>
+                  <div className="notification-left">
+                    <span className={`notification-dot dot-${note.type}`} />
+                    <div>
+                      <div className="notification-message">{note.message}</div>
+                      <div className="notification-time">{timeAgo(note.createdAt)}</div>
+                    </div>
+                  </div>
+                  <div className="notification-actions">
+                    <span className={`notification-status ${note.read ? '' : 'notification-status-unread'}`}>
+                      {note.read ? 'Read' : 'New'}
+                    </span>
+                    {!note.read && (
+                      <button
+                        className="notification-mark-btn"
+                        onClick={() => handleMarkNotificationsAsRead([note._id])}
+                        disabled={isUpdatingNotifications}
+                      >
+                        Mark read
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* ── Stats Row ── */}
         <div className="stats-row">
@@ -334,14 +438,13 @@ function Dash() {
                         : "Salary N/A"}
                     </span>
                     <span style={{
-                      backgroundColor: '#fef3c7',
-                      color: '#d97706',
+                      ...latestJobActionStyle(job._id),
                       padding: '6px 12px',
                       borderRadius: '8px',
                       fontWeight: '700',
                       fontSize: '13px'
                     }}>
-                      Apply →
+                      {latestJobActionText(job._id)}
                     </span>
                   </div>
                 </Link>

@@ -20,23 +20,7 @@ packages to be downloaded...
 
 
 What’s left to complete this project
-✅ Current app coverage
-The project already implements most core features:
 
-backend:
-signup/login with JWT
-password reset flow (forgotpassword, verifyotp, resetpassword)
-job posting, listing, detail, status update, delete
-job application and applicant review / accept / reject
-seeker dashboard and profile update
-frontend:
-login/signup/forgot password pages
-protected routes
-seeker dashboard
-recruiter/post job dashboard
-profile editing including image/resume upload
-job detail + apply flow
-Remaining work
 1) Backend production hardening
 Add role-based authorization checks
 only recruiters should post jobs, view own jobs/applicants, change job status, delete jobs

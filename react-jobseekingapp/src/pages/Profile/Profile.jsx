@@ -301,7 +301,7 @@ function Profile() {
                 <li><button type="button" className="sidebar-link" onClick={()=>scrollToSection('skills')}>Skills</button></li>
                 <li><button type="button" className="sidebar-link" onClick={()=>scrollToSection('links')}>Links</button></li>
                 <li><button type="button" className="sidebar-link" onClick={()=>scrollToSection('edit')}>Edit Profile</button></li>
-                <li><button type="button" className="sidebar-link" onClick={()=>scrollToSection('resume')}>Resume</button></li>
+                <li><button type="button" className="sidebar-link" onClick={()=>scrollToSection('resume')}>Resume/CV</button></li>
             </ul>
         </div>
         

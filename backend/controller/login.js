@@ -3,41 +3,34 @@ import bcryptjs from "bcryptjs"
 import jwt from "jsonwebtoken"
 import User from "../database/dbuser.js"
 import { isValidEmail, isValidPassword, sanitizeString } from "../utils/validation.js"
+import { runValidation, loginChecks } from "../utils/validators.js"
 
 const router = express.Router()
 
-router.post('/login', async (req, res) => {
+router.post('/login', runValidation(loginChecks), async (req, res) => {
     try {
         const { email, password, role } = req.body;
         const cleanEmail = sanitizeString(email).toLowerCase();
         const cleanRole = sanitizeString(role);
 
-        if (!cleanEmail || !password) {
-            return res.status(400).json({ error: "Email and password are required" });
-        }
-
         if (!isValidEmail(cleanEmail)) {
-            return res.status(400).json({ error: "Invalid email address" });
-        }
-
-        if (!isValidPassword(password)) {
-            return res.status(400).json({ error: "Password must be at least 6 characters" });
+            return res.error("Invalid email address", 400);
         }
 
         const user = await User.findOne({ email: cleanEmail })
 
         if (!user) {
-            return res.status(400).json({ error: "Email doesn't exist" })
+            return res.error("Email doesn't exist", 400);
         }
 
         if (user.role && cleanRole && user.role !== cleanRole) {
-            return res.status(400).json({ error: "Account doesn't exist for this role" })
+            return res.error("Account doesn't exist for this role", 400);
         }
 
         const verifypass = await bcryptjs.compare(password, user.password)
 
         if (!verifypass) {
-            return res.status(400).json({ error: "Incorrect password" })
+            return res.error("Incorrect password", 400);
         }
 
         const token = jwt.sign(
@@ -46,7 +39,7 @@ router.post('/login', async (req, res) => {
             { expiresIn: '1d' }
         )
 
-        res.json({
+        return res.success({
             message: "Login successful",
             token,
             user: {
@@ -60,7 +53,7 @@ router.post('/login', async (req, res) => {
 
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: "Server error" });
+        return res.error("Server error", 500, err.message);
     }
 });
 

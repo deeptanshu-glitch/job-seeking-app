@@ -7,6 +7,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { isValidEmail, isValidPhone, sanitizeString, sanitizeArray } from "../utils/validation.js";
+import { runValidation, updateProfileChecks } from "../utils/validators.js";
 
 const router = express.Router();
 
@@ -23,6 +24,41 @@ router.get("/dashboard", auth, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch dashboard" });
+  }
+});
+
+router.patch("/notifications/mark-read", auth, requireRole("job seeker"), async (req, res) => {
+  try {
+    const { ids } = req.body || {};
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const targetIds = Array.isArray(ids) ? ids.filter(Boolean) : [];
+
+    user.notifications.forEach((notification) => {
+      if (targetIds.length === 0 || targetIds.includes(notification._id.toString())) {
+        notification.read = true;
+      }
+    });
+
+    await user.save();
+
+    const notifications = (user.notifications || [])
+      .slice()
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 10);
+
+    res.json({
+      success: true,
+      notifications,
+      unreadCount: notifications.filter((notification) => !notification.read).length
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to update notifications" });
   }
 });
 
@@ -49,7 +85,12 @@ router.get("/seeker-dashboard", auth, requireRole("job seeker"), async (req, res
       .limit(6)
       .select('title companyName location salary jobtype experience createdAt');
 
-    res.json({ user, profileCompletion, applications, latestJobs });
+    const notifications = (user.notifications || [])
+      .slice()
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 10);
+
+    res.json({ user, profileCompletion, applications, latestJobs, notifications });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch seeker dashboard" });
@@ -81,7 +122,7 @@ const upload = multer({ storage, fileFilter: (req, file, cb) => {
   cb(null, true);
 }});
 
-router.post('/update-profile', auth, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'resume', maxCount: 10 }]), async (req, res) => {
+router.post('/update-profile', auth, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'resume', maxCount: 10 }]), runValidation(updateProfileChecks), async (req, res) => {
   try {
     const { fullname, email, phonenumber, education, experience, skills, resumeText, links, companyName, companyWebsite, companyDescription, location, position, image, resume } = req.body;
 

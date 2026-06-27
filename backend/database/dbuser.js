@@ -39,6 +39,13 @@ const jobSeekSchema = new mongoose.Schema({
 
   position: { type: String, default: "" },
 
+  notifications: [{
+    message: { type: String, required: true },
+    type: { type: String, enum: ["info", "success", "warning", "error"], default: "info" },
+    read: { type: Boolean, default: false },
+    createdAt: { type: Date, default: Date.now }
+  }],
+
   resetOtp: { type: String, default: null },
 
   resetOtpExpires: { type: Date, default: null },

@@ -773,7 +773,7 @@ function Postjob() {
 
                                 {Array.isArray(selectedApplicant.resume) && selectedApplicant.resume.length > 0 && (
                                     <div className="appl-section">
-                                        <h4>Resume / Documents 📄</h4>
+                                        <h4>Resume / cv 📄</h4>
                                         <div className="resume-links">
                                             {selectedApplicant.resume.map((url, i) => (
                                                 <a key={i} href={url} target="_blank" rel="noreferrer" className="resume-link-btn">
@@ -938,8 +938,15 @@ function Postjob() {
 
                 {/* ── Right Panel ─────────────────────────── */}
                 <div className="column column-right">
+                    <div className="rp-panel-title">
+                        <div>
+                            <p className="rp-panel-label">Recruiter Profile</p>
+                            <h3>Manage your recruiter details</h3>
+                        </div>
+                    </div>
+
                     {profileLoading ? (
-                        <div className="pj-loading"><span className="spinner" />Loading...</div>
+                        <div className="pj-loading"><span className="spinner" />Loading profile...</div>
                     ) : recruiter ? (
                         <>
                             <div className="rp-header">

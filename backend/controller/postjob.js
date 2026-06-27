@@ -4,11 +4,12 @@ import Application from "../database/db.application.js";
 import User from "../database/dbuser.js";
 import auth, { requireRole } from "../middleware.js";
 import { isValidObjectId, sanitizeString, sanitizeArray } from "../utils/validation.js";
+import { runValidation, postJobChecks } from "../utils/validators.js";
 
 const router = express.Router();
 
 // POST a new job
-router.post("/postjob", auth, requireRole("recruiter"), async (req, res) => {
+router.post("/postjob", auth, requireRole("recruiter"), runValidation(postJobChecks), async (req, res) => {
     try {
         const { title, description, requirements, salary, experience, location, jobtype, position, companyName } = req.body;
         const cleanTitle = sanitizeString(title);
