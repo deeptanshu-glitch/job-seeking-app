@@ -1,17 +1,29 @@
-body{
+html,
+body {
+  width: 100%;
   min-height: 100vh;
- 
+  margin: 0;
+  padding: 0;
   font-family: Arial, sans-serif;
+  overflow-x: hidden;
+  background: #000;
 }
 
 .intro-bg {
- height: 100vh;
+  min-height: 100vh;
+  min-width: 100vw;
   width: 100%;
-  background: url("/photo.jpg") ;
-  background-size:cover;
+  background-image: url("/photo.jpg");
+  background-position: center center;
+  background-size: cover;
   background-repeat: no-repeat;
-  margin: 0%;
-  padding: 0%;
+  background-color: #000;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .intro {
@@ -62,13 +74,14 @@ body{
   border-radius: 25px;       
   cursor: pointer;
   transition: all 0.3s ease;
+  color: #fff;
 }
 
 
 .login-btn {
   background: linear-gradient(45deg, #fc2104, #cf671c);
   border: 2px solid #007bff;
-  color: lab(95.79% -0.15 -0.61);
+  color: #fff;
 }
 .login-btn:hover {
   background: #f41f03;
@@ -79,7 +92,7 @@ body{
 .signup-btn {
   background: linear-gradient(45deg, #007bff, #00c6ff);
   border: none;
-  color: rgb(245, 242, 242);
+  color: #fff;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 .signup-btn:hover {
@@ -146,44 +159,71 @@ body{
 
 @media (max-width: 900px) {
   .intro-bg {
-    height: auto;
-    min-height: 90vh;
+    min-height: 100vh;
     padding: 40px 20px 60px;
     background-position: center center;
   }
+  .heading {
+    margin: 0 0 1rem;
+    font-size: 2.2rem;
+  }
   .Quotes,
   .Motivation {
-    font-size: 2rem;
-    padding-left: 10%;
+    font-size: 1.7rem;
+    padding-left: 8%;
+  }
+  .button-container {
+    justify-content: flex-start;
+    padding: 20px 0 0;
   }
 }
 
 @media (max-width: 640px) {
+  html,
+  body,
+  #root {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0 !important;
+    width: 100%;
+    background: #000;
+  }
   body {
-    min-height: auto;
+    background: #000;
   }
   .intro-bg {
-    min-height: auto;
-    padding: 32px 16px 48px;
+    min-height: 100vh;
+    width: 100vw;
+    padding: 24px 16px 36px;
+    justify-content: flex-start;
+    background-size: cover;
+    background-position: center center;
+    background-color: #000;
+    margin-left: calc(50% - 50vw);
   }
   .heading {
-    margin: 1.5rem auto;
-    margin-left: 0;
+    margin: 0.5rem 0 1rem;
     text-align: center;
-    font-size: 2rem;
+    font-size: 1.8rem;
   }
   .Quotes,
   .Motivation {
     padding-left: 0;
-    font-size: 1.6rem;
+    font-size: 1.2rem;
+    text-align: center;
   }
   .button-container {
     flex-direction: column;
-    align-items: center;
+    align-items: flex-end;
+    gap: 12px;
+    padding: 20px 0 0;
   }
   .btn {
-    width: 100%;
-    max-width: 100%;
+    width: auto;
+    min-width: 140px;
+    max-width: 220px;
+    padding: 12px 16px;
+    font-size: 0.95rem;
   }
 }
 
