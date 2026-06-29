@@ -560,6 +560,32 @@
   grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
   gap: 18px;
 }
+
+.section-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+.see-more-btn {
+  border: 1px solid var(--gray-300);
+  background: transparent;
+  color: var(--gray-700);
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.see-more-btn:hover {
+  background: var(--gray-100);
+  transform: translateY(-1px);
+}
+
+  /* gap: 18px;
+} */
 .job-card {
   background: #ffffff;
   border: 1px solid var(--gray-200);

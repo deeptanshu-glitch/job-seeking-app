@@ -63,6 +63,8 @@ function Dash() {
   const [dashData, setDashData] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showAllApplied, setShowAllApplied] = useState(false);
+  const [showAllLatest, setShowAllLatest] = useState(false);
   const [isUpdatingNotifications, setIsUpdatingNotifications] = useState(false);
   const navigate = useNavigate();
 
@@ -141,6 +143,11 @@ function Dash() {
     (j.companyName && j.companyName.toLowerCase().includes(searchQuery.toLowerCase())) ||
     (j.location && j.location.toLowerCase().includes(searchQuery.toLowerCase()))
   );
+
+  const displayedApplications = showAllApplied ? applications : applications.slice(0, 4);
+  const displayedLatestJobs = showAllLatest ? filteredJobs : filteredJobs.slice(0, 4);
+  const hasMoreApplications = applications.length > 4;
+  const hasMoreLatestJobs = filteredJobs.length > 4;
 
   const handleMarkNotificationsAsRead = async (ids = []) => {
     if (isUpdatingNotifications) return;
@@ -330,9 +337,10 @@ function Dash() {
               <p>Browse the latest jobs below and start applying!</p>
             </div>
           ) : (
-            <div className="applied-list">
-              {applications.map((app) => (
-                <div key={app._id} className="applied-item">
+            <>
+              <div className="applied-list">
+                {displayedApplications.map((app) => (
+                  <div key={app._id} className="applied-item">
                   <div className="applied-item-left">
                     <div className="job-logo-circle">
                       {jobTypeEmoji(app.job?.jobtype)}
@@ -367,6 +375,16 @@ function Dash() {
                 </div>
               ))}
             </div>
+            {hasMoreApplications && (
+              <div className="section-footer">
+                <button
+                  className="see-more-btn"
+                  onClick={() => setShowAllApplied((prev) => !prev)}
+                >
+                  {showAllApplied ? "Show less" : "See more"}
+                </button>
+              </div>
+            )}
           )}
         </div>
 
@@ -403,8 +421,9 @@ function Dash() {
               <p>Try adjusting your search or check back tomorrow.</p>
             </div>
           ) : (
-            <div className="jobs-grid">
-              {filteredJobs.map((job) => (
+            <>
+              <div className="jobs-grid">
+                {displayedLatestJobs.map((job) => (
                 <Link key={job._id} to={`/job/${job._id}`} className="job-card" style={{ textDecoration: 'none', color: 'inherit' }}>
                   <div className="job-card-header">
                     <div>
@@ -450,6 +469,16 @@ function Dash() {
                 </Link>
               ))}
             </div>
+            {hasMoreLatestJobs && (
+              <div className="section-footer">
+                <button
+                  className="see-more-btn"
+                  onClick={() => setShowAllLatest((prev) => !prev)}
+                >
+                  {showAllLatest ? "Show less" : "See more"}
+                </button>
+              </div>
+            )}
           )}
         </div>
 

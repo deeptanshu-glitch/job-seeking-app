@@ -288,6 +288,26 @@
 }
 .signout-btn:hover { background: #fecaca; transform: translateY(-1px); }
 
+.mobile-signout-btn {
+  display: none;
+  margin-top: 16px;
+  width: 100%;
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1.5px solid #fca5a5;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  transition: background 0.15s, transform 0.1s;
+}
+.mobile-signout-btn:hover {
+  background: #fecaca;
+  transform: translateY(-1px);
+}
+
 .back-btn {
   background: white;
   border: 1.5px solid var(--gray-200);
@@ -1364,6 +1384,9 @@
     border-top: 1px solid var(--gray-200);
     margin-top: 20px;
     padding: 20px 16px;
+  }
+  .mobile-signout-btn {
+    display: block;
   }
   .center-content {
     padding: 20px 16px;

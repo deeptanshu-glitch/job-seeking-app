@@ -1075,6 +1075,9 @@ function Postjob() {
                                     </div>
                                 </div>
                             )}
+                            <button type="button" className="mobile-signout-btn" onClick={handleSignout}>
+                                Sign Out
+                            </button>
                         </>
                     ) : null}
                 </div>

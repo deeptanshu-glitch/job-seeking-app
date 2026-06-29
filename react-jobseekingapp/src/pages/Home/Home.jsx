@@ -19,11 +19,9 @@ function Welcome(){
 
 
 
-            <div className="button-container" style={
-                {paddingRight: '20%',
-                paddingTop: '5%'}}>
-              <Link to="/login"><button className="btn login-btn fade-in delay-5 pulse-glow " onClick={Login} style={{color:'white'}}>Login</button></Link>
-              <Link to="/signup"><button className="btn signup-btn fade-in delay-5 pulse-glow "style={{color:'white'}}>Sign Up</button></Link> 
+            <div className="button-container">
+              <Link to="/login"><button className="btn login-btn fade-in delay-5 pulse-glow" onClick={Login}>Login</button></Link>
+              <Link to="/signup"><button className="btn signup-btn fade-in delay-5 pulse-glow">Sign Up</button></Link> 
             </div>
 
         </div>
